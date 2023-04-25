@@ -277,6 +277,48 @@ class SetSPCTransactionModeAction:
         self.logger.debug("Setting SPC transaction mode to %s" % mode)
         return self.protocol.spc_transactions.set_spc_transaction_mode(mode)
 
+class CreateFakeSensorAction:
+    name = "create_fake_sensor"
+
+    def __init__(self, logger, protocol):
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py CreateFakeSensorAction init()\n")
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py CreateFakeSensorAction call()\n")
+        print(payload)
+        create_parameters = payload["create_parameters"]
+        return self.protocol.fake_sensor.create_fake_sensor(create_parameters)
+
+class UpdateFakeSensorAction:
+    name = "update_fake_sensor"
+
+    def __init__(self, logger, protocol):
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py UpdateFakeSensorAction init()\n")
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py UpdateFakeSensorAction call()\n")
+        print(payload)
+        update_parameters = payload["update_parameters"]
+        return self.protocol.fake_sensor.update_fake_sensor(update_parameters)
+
+class RemoveFakeSensorAction:
+    name = "remove_fake_sensor"
+
+    def __init__(self, logger, protocol):
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py RemoveFakeSensorAction init()\n")
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py RemoveFakeSensorAction call()\n")
+        print(payload)
+        remove_parameters = payload["remove_parameters"]
+        return self.protocol.fake_sensor.remove_fake_sensor(remove_parameters)
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -296,4 +338,7 @@ actions = [ClickAction,
            RemoveCredentialAction,
            RemoveAllCredentialsAction,
            SetUserVerifiedAction,
-           SetSPCTransactionModeAction]
+           SetSPCTransactionModeAction,
+           CreateFakeSensorAction,
+           UpdateFakeSensorAction,
+           RemoveFakeSensorAction]

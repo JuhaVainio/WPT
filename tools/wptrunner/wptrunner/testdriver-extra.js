@@ -268,4 +268,22 @@
     window.test_driver_internal.set_spc_transaction_mode = function(mode, context = null) {
         return create_action("set_spc_transaction_mode", {mode, context});
     };
+
+    window.test_driver_internal.create_fake_sensor = function(create_parameters, context = null) {
+        console.trace("JV666 > tools/wptrunner/wptrunner/testdriver-extra.js create_fake_sensor()");
+        console.trace(JSON.stringify(create_parameters));
+        return create_action("create_fake_sensor", {create_parameters, context});
+    };
+
+    window.test_driver_internal.update_fake_sensor = function(update_parameters, context = null) {
+        console.trace("JV666 > tools/wptrunner/wptrunner/testdriver-extra.js update_fake_sensor()");
+        console.trace(JSON.stringify(update_parameters));
+        return create_action("update_fake_sensor", {update_parameters, context});
+    };
+
+    window.test_driver_internal.remove_fake_sensor = function(remove_parameters, context = null) {
+        console.trace("JV666 > tools/wptrunner/wptrunner/testdriver-extra.js remove_fake_sensor()");
+        console.trace(JSON.stringify(remove_parameters));
+        return create_action("remove_fake_sensor", {remove_parameters, context});
+    };
 })();

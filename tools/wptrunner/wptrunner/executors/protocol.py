@@ -708,3 +708,19 @@ class WdspecProtocol(ConnectionlessProtocol):
         conn.request("HEAD", "/invalid")
         res = conn.getresponse()
         return res.status == 404
+
+class FakeSensorProtocolPart(ProtocolPart):
+    """Protocol part for Sensors"""
+    __metaclass__ = ABCMeta
+
+    name = "fake_sensor"
+
+    @abstractmethod
+    def create_fake_sensor(self, create_parameters):
+        pass
+
+    def update_fake_sensor(self, update_parameters):
+        pass
+
+    def remove_fake_sensor(self, remove_parameters):
+        pass

@@ -32,6 +32,7 @@ from .protocol import (BaseProtocolPart,
                        WindowProtocolPart,
                        DebugProtocolPart,
                        SPCTransactionsProtocolPart,
+                       FakeSensorProtocolPart,
                        merge_dicts)
 
 from webdriver.client import Session
@@ -350,6 +351,43 @@ class WebDriverDebugProtocolPart(DebugProtocolPart):
         raise NotImplementedError()
 
 
+class WebDriverFakeSensor(FakeSensorProtocolPart):
+
+        # CREATE_FAKE_SENSOR = (_Method.POST, '/session/:sessionId/sensor')
+        #self.webdriver.send_session_command("POST", "sensor", json_message)
+
+        # UPDATE_FAKE_SENSOR = (_Method.POST, '/session/:sessionId/sensor/:type')
+        #type = 'gyroscope';
+        #self.webdriver.send_session_command("POST", "sensor/%s" % type)
+
+        # REMOVE_FAKE_SENSOR = (_Method.DELETE, '/session/:sessionId/sensor/:type')
+        #type = 'gyroscope';
+        #self.webdriver.send_session_command("DELETE", "sensor/%s" % type)
+
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def create_fake_sensor(self, create_parameters):
+        print("JV666 > tools/wptrunner/wptrunner/executors/executorwebdriver.py create_fake_sensor()\n")
+        print(create_parameters)
+        #json_message = {"type": create_parameters}
+        # CREATE_FAKE_SENSOR = (_Method.POST, '/session/:sessionId/sensor')
+        #self.webdriver.send_session_command("POST", "sensor", json_message)
+        self.webdriver.send_session_command("POST", "sensor", create_parameters)
+
+    def update_fake_sensor(self, update_parameters):
+        print("JV666 > tools/wptrunner/wptrunner/executors/executorwebdriver.py update_fake_sensor()\n")
+        # UPDATE_FAKE_SENSOR = (_Method.POST, '/session/:sessionId/sensor/:type')
+        type = 'gyroscope'
+        self.webdriver.send_session_command("POST", "sensor/%s" % type, update_parameters)
+
+    def remove_fake_sensor(self, remove_parameters):
+        print("JV666 > tools/wptrunner/wptrunner/executors/executorwebdriver.py remove_fake_sensor()\n")
+        # REMOVE_FAKE_SENSOR = (_Method.DELETE, '/session/:sessionId/sensor/:type')
+        type = 'gyroscope'
+        self.webdriver.send_session_command("DELETE", "sensor/%s" % type, remove_parameters)
+
+
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
                   WebDriverTestharnessProtocolPart,
@@ -365,7 +403,8 @@ class WebDriverProtocol(Protocol):
                   WebDriverSetPermissionProtocolPart,
                   WebDriverVirtualAuthenticatorProtocolPart,
                   WebDriverSPCTransactionsProtocolPart,
-                  WebDriverDebugProtocolPart]
+                  WebDriverDebugProtocolPart,
+                  WebDriverFakeSensor]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)

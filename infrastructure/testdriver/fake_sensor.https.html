@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Sensor</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+
+<script>
+"use strict";
+
+let sensor;
+
+let readingEventCounter = 0;
+
+function sensor_start() {
+    sensor = new Gyroscope();
+    sensor.onreading = () => {
+        readingEventCounter++;
+    };
+    sensor.start();
+}
+
+function sensor_stop() {
+    sensor.stop();
+}
+
+promise_test(async t => {
+  console.trace("JV666 TEST_START")
+
+  let tested_sensor = 'gyroscope'
+  let create_parameters = {
+    'type': tested_sensor
+  };
+  console.trace("JV666 CreateFakeSensor")
+  await test_driver.create_fake_sensor(create_parameters);
+
+  console.trace("JV666 sensor_start")
+  sensor_start();
+
+
+
+  // Waiting for debugging
+  // let update_parameters = {
+  //   'type': tested_sensor,
+  //   'x': 1.0,
+  //   'y': 2.0,
+  //   'z': 3.0
+  // };
+  // await test_driver.update_fake_sensor(update_parameters);
+
+  // update_parameters = {
+  //   'type': tested_sensor,
+  //   'x': 100.0,
+  //   'y': 200.0,
+  //   'z': 300.0
+  // };
+  // await test_driver.update_fake_sensor(update_parameters);
+
+  // let remove_parameters = {
+  //   'type': tested_sensor
+  // };
+  // await test_driver.remove_fake_sensor(remove_parameters);
+
+  console.trace("JV666 TEST_END")
+}, "Sensor test");
+
+</script>
