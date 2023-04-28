@@ -681,24 +681,169 @@
           return window.test_driver_internal.set_spc_transaction_mode(mode, context);
         },
 
-        create_fake_sensor: function(create_parameters, context=null) {
-          console.trace(`JV666 > WPT resources/testdriver.js create_fake_sensor()`);
+        /**
+         * Creates a virtual sensor
+         *
+         * This function creates a virtual sensor for use with the Sensors APIs.
+         *
+         * Matches the `Create mock sensor
+         * <https://w3c.github.io/sensors/#create-mock-sensor-command>`_
+         * WebDriver command.
+         *
+         * Sensor types are defined in `Mock sensor type
+         * <https://w3c.github.io/sensors/#section-mock-sensor-type>`
+         *
+         * @param {Object} create_parameters - An object for create parameters
+         *      Key         Description                             Value type
+         *      ==============================================================
+         *      type        Sensor type                             string
+         *      connected   Indicates a mock sensor's connection    boolean
+         *                  flag which is used for switching the
+         *                  connection between Sensor object and
+         *                  mock sensor. When set to false the user
+         *                  agent must force the result of invoking
+         *                  connect to sensor with mock sensor's
+         *                  associated Sensor object as argument to
+         *                  false, otherwise true.
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} - ToDo
+         */
+        create_virtual_sensor: function(create_parameters, context=null) {
+          console.trace(`JV666 > WPT resources/testdriver.js create_virtual_sensor()`);
           console.trace(JSON.stringify(create_parameters));
-          return window.test_driver_internal.create_fake_sensor(create_parameters, context);
+          return window.test_driver_internal.create_virtual_sensor(create_parameters, context);
         },
 
-        update_fake_sensor: function(update_parameters, context=null) {
-          console.trace(`JV666 > WPT resources/testdriver.js update_fake_sensor()`);
+        /**
+         * Updates a virtual sensor
+         *
+         * This function updates a virtual sensor values.
+         *
+         * Matches the `Update mock sensor reading
+         * <https://w3c.github.io/sensors/#update-mock-sensor-reading-command>`_
+         * WebDriver command.
+         *
+         * @param {Object} update_parameters - An object for update parameters
+         *      Key         Description                          Value type
+         *      ===========================================================
+         *      type        Sensor type                          string
+         *      readings    New sensor values. Sensor specific   object
+         *
+         * Sensor specific reading object
+         * `ambient-light
+         * <https://w3c.github.io/ambient-light/#mock-ambient-light-sensor-type>`
+         *      Key         Description     Value type
+         *      ======================================
+         *      illuminance sensor value    double
+         *
+         * Example
+         *      {
+         *      'type': 'ambient-light'
+         *      'illuminance': 1.0
+         *      }
+         *
+         * accelerometer, gravity, gyroscope, linear-acceleration and
+         * magnetometer
+         *      Key     Description     Value type
+         *      ==================================
+         *      x       value for X     double
+         *      y       value for Y     double
+         *      z       value for Z     double
+         *
+         * Example
+         *      {
+         *      'type': 'accelerometer'
+         *      'x': 1.0
+         *      'y': 2.0
+         *      'z': 3.0
+         *      }
+         *
+         * absolute-orientation and relative-orientation
+         *      Key     Description     Value type
+         *      ==================================
+         *      x       value for X     double
+         *      y       value for Y     double
+         *      z       value for Z     double
+         *      w       value for W     double
+         *
+         *  Example
+         *      {
+         *      'type': 'absolute-orientation'
+         *      'quaternion' = {
+         *                     'x': 1.0,
+         *                     'y': 2.0,
+         *                     'z': 3.0,
+         *                     'w': 4.0
+         *                     }
+         *      }
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} - ToDo
+         */
+        update_virtual_sensor: function(update_parameters, context=null) {
+          console.trace(`JV666 > WPT resources/testdriver.js update_virtual_sensor()`);
           console.trace(JSON.stringify(update_parameters));
-          return window.test_driver_internal.update_fake_sensor(update_parameters, context);
+          return window.test_driver_internal.update_virtual_sensor(update_parameters, context);
         },
 
-        remove_fake_sensor: function(remove_parameters, context=null) {
-          console.trace(`JV666 > WPT resources/testdriver.js remove_fake_sensor()`);
+        /**
+         * Removes a virtual sensor
+         *
+         * This function removed a virtual sensor.
+         *
+         * Matches the `Delete mock sensor
+         * <https://w3c.github.io/sensors/#delete-mock-sensor-command>`_
+         * WebDriver command.
+         *
+         * @param {Object} remove_parameters - Sensor to be removed
+         *      Key         Description     Value type
+         *      ======================================
+         *      type        Sensor type     string
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} - ToDo
+         */
+        remove_virtual_sensor: function(remove_parameters, context=null) {
+          console.trace(`JV666 > WPT resources/testdriver.js remove_virtual_sensor()`);
           console.trace(JSON.stringify(remove_parameters));
-          return window.test_driver_internal.remove_fake_sensor(remove_parameters, context);
+          return window.test_driver_internal.remove_virtual_sensor(remove_parameters, context);
         },
 
+        /**
+         * Get virtual sensor information
+         *
+         * This function gets virtual sensor information.
+         *
+         * Matches the `Get mock sensor
+         * <https://w3c.github.io/sensors/#get-mock-sensor-command>`_
+         * WebDriver command.
+         *
+         * @param {Object} information_parameters - Sensor to get information
+         *      Key         Description     Value type
+         *      ======================================
+         *      type        Sensor type     string
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} - ToDo
+         */
+        get_virtual_sensor_information: function(information_parameters, context=null) {
+            console.trace(`JV666 > WPT resources/testdriver.js get_virtual_sensor_information()`);
+            console.trace(JSON.stringify(information_parameters));
+            return window.test_driver_internal.get_virtual_sensor_information(information_parameters, context);
+          },
     };
 
     window.test_driver_internal = {
@@ -824,5 +969,20 @@
             throw new Error("set_spc_transaction_mode() is not implemented by testdriver-vendor.js");
         },
 
+        async create_virtual_sensor(create_parameters, context=null) {
+            throw new Error("create_virtual_sensor() is not implemented by testdriver-vendor.js");
+        },
+
+        async update_virtual_sensor(update_parameters, context=null) {
+            throw new Error("update_virtual_sensor() is not implemented by testdriver-vendor.js");
+        },
+
+        async remove_virtual_sensor(remove_parameters, context=null) {
+            throw new Error("remove_virtual_sensor() is not implemented by testdriver-vendor.js");
+        },
+
+        async get_virtual_sensor_information(information_parameters, context=null) {
+            throw new Error("get_virtual_sensor_information() is not implemented by testdriver-vendor.js");
+        },
     };
 })();

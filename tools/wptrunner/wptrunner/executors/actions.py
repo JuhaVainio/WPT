@@ -277,47 +277,61 @@ class SetSPCTransactionModeAction:
         self.logger.debug("Setting SPC transaction mode to %s" % mode)
         return self.protocol.spc_transactions.set_spc_transaction_mode(mode)
 
-class CreateFakeSensorAction:
-    name = "create_fake_sensor"
+class CreateVirtualSensorAction:
+    name = "create_virtual_sensor"
 
     def __init__(self, logger, protocol):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py CreateFakeSensorAction init()\n")
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py CreateVirtualSensorAction init()\n")
         self.logger = logger
         self.protocol = protocol
 
     def __call__(self, payload):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py CreateFakeSensorAction call()\n")
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py CreateVirtualSensorAction call()\n")
         print(payload)
         create_parameters = payload["create_parameters"]
-        return self.protocol.fake_sensor.create_fake_sensor(create_parameters)
+        return self.protocol.virtual_sensor.create_virtual_sensor(create_parameters)
 
-class UpdateFakeSensorAction:
-    name = "update_fake_sensor"
+class UpdateVirtualSensorAction:
+    name = "update_virtual_sensor"
 
     def __init__(self, logger, protocol):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py UpdateFakeSensorAction init()\n")
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py UpdateVirtualSensorAction init()\n")
         self.logger = logger
         self.protocol = protocol
 
     def __call__(self, payload):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py UpdateFakeSensorAction call()\n")
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py UpdateVirtualSensorAction call()\n")
         print(payload)
         update_parameters = payload["update_parameters"]
-        return self.protocol.fake_sensor.update_fake_sensor(update_parameters)
+        return self.protocol.virtual_sensor.update_virtual_sensor(update_parameters)
 
-class RemoveFakeSensorAction:
-    name = "remove_fake_sensor"
+class RemoveVirtualSensorAction:
+    name = "remove_virtual_sensor"
 
     def __init__(self, logger, protocol):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py RemoveFakeSensorAction init()\n")
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py RemoveVirtualSensorAction init()\n")
         self.logger = logger
         self.protocol = protocol
 
     def __call__(self, payload):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py RemoveFakeSensorAction call()\n")
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py RemoveVirtualSensorAction call()\n")
         print(payload)
         remove_parameters = payload["remove_parameters"]
-        return self.protocol.fake_sensor.remove_fake_sensor(remove_parameters)
+        return self.protocol.virtual_sensor.remove_virtual_sensor(remove_parameters)
+
+class GetVirtualSensorInformation:
+    name = "get_virtual_sensor_information"
+
+    def __init__(self, logger, protocol):
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py GetVirtualSensorInformation init()\n")
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py GetVirtualSensorInformation call()\n")
+        print(payload)
+        information_parameters = payload["information_parameters"]
+        return self.protocol.virtual_sensor.get_virtual_sensor_information(information_parameters)
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
@@ -339,6 +353,7 @@ actions = [ClickAction,
            RemoveAllCredentialsAction,
            SetUserVerifiedAction,
            SetSPCTransactionModeAction,
-           CreateFakeSensorAction,
-           UpdateFakeSensorAction,
-           RemoveFakeSensorAction]
+           CreateVirtualSensorAction,
+           UpdateVirtualSensorAction,
+           RemoveVirtualSensorAction,
+           GetVirtualSensorInformation]

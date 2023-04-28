@@ -5,63 +5,171 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-
-
 <script>
 "use strict";
 
-let sensor;
+promise_test(async t => {
+  const sensorType = 'gyroscope';
+  await test_driver.create_virtual_sensor({type: sensorType});
 
-let readingEventCounter = 0;
-
-function sensor_start() {
-    sensor = new Gyroscope();
-    sensor.onreading = () => {
-        readingEventCounter++;
-    };
-    sensor.start();
-}
-
-function sensor_stop() {
+  const sensor = new Gyroscope();
+  // See https://web-platform-tests.org/writing-tests/testharness-api.html#cleanup
+  // We need this to make sure one test does not interfere with
+  // another by stopping sensors and removing any overrides before the
+  // next test is run.
+  t.add_cleanup(async () => {
     sensor.stop();
-}
+    await test_driver.remove_virtual_sensor({type: sensorType});
+  });
+  const watcher = new EventWatcher(t, sensor, ['activate']);
+
+  sensor.start();
+  await watcher.wait_for('activate');
+}, "Test that create_virtual_sensor() works");
+
+// testCreateVirtualSensorNotConnected @ chrome/test/chromedriver/test/run_py_tests.py
+promise_test(async t => {
+  const sensorType = 'gyroscope';
+  await test_driver.create_virtual_sensor({type: sensorType, connected: false});
+
+  const sensor = new Gyroscope();
+  t.add_cleanup(async () => {
+    sensor.stop();
+    await test_driver.remove_virtual_sensor({type: sensorType});
+  });
+
+  const watcher = new EventWatcher(t, sensor, ['error']);
+  sensor.start();
+  const error = await watcher.wait_for('error');
+  assert_equals(error.error.name, 'NotReadableError');
+}, "Test that create_virtual_sensor() can create an unavailable sensor");
+
+//testCreateVirtualSensorWithMinimumFrequency @ chrome/test/chromedriver/test/run_py_tests.py
+promise_test(async t => {
+  const sensorType = 'gyroscope';
+  let create_parameters = {
+    'type': sensorType,
+    'minSamplingFrequency': 6
+  };
+
+  await test_driver.create_virtual_sensor(create_parameters);
+
+  let sensor = new Gyroscope();
+  t.add_cleanup(async () => {
+    sensor.stop();
+    await test_driver.remove_virtual_sensor({type: sensorType});
+  });
+
+  const watcher = new EventWatcher(t, sensor, ['information', 'activate', 'reading', 'error']);
+  sensor.start();
+  await watcher.wait_for('activate');
+
+  let info = await test_driver.get_virtual_sensor_information({'type': sensorType});
+
+  assert_equals(true, info['isReadingData']);
+  // ToDo Why service returns 10 and not 6
+  assert_equals(10.0, info['requestedSamplingFrequency']);
+
+}, "Test sensor with minimum frequency");
 
 promise_test(async t => {
-  console.trace("JV666 TEST_START")
-
-  let tested_sensor = 'gyroscope'
+  let sensorType = 'gyroscope'
   let create_parameters = {
-    'type': tested_sensor
+    'type': sensorType
   };
   console.trace("JV666 CreateFakeSensor")
-  await test_driver.create_fake_sensor(create_parameters);
+  await test_driver.create_virtual_sensor(create_parameters);
 
   console.trace("JV666 sensor_start")
-  sensor_start();
+  let sensor = new Gyroscope();
+  t.add_cleanup(async () => {
+    sensor.stop();
+    await test_driver.remove_virtual_sensor({type: sensorType});
+  });
 
-
+  const watcher = new EventWatcher(t, sensor, ['activate', 'reading', 'error']);
+  sensor.start();
+  await watcher.wait_for('activate');
 
   // Waiting for debugging
-  // let update_parameters = {
-  //   'type': tested_sensor,
-  //   'x': 1.0,
-  //   'y': 2.0,
-  //   'z': 3.0
-  // };
-  // await test_driver.update_fake_sensor(update_parameters);
+  let update_parameters = {
+    'type': sensorType,
+    'x': 1.0,
+    'y': 2.0,
+    'z': 3.0
+  };
+  await test_driver.update_virtual_sensor(update_parameters);
 
-  // update_parameters = {
-  //   'type': tested_sensor,
-  //   'x': 100.0,
-  //   'y': 200.0,
-  //   'z': 300.0
-  // };
-  // await test_driver.update_fake_sensor(update_parameters);
+  await watcher.wait_for('reading');
+  assert_approx_equals(sensor.x, 1.0, 0.01);
+  assert_approx_equals(sensor.y, 2.0, 0.01);
+  assert_approx_equals(sensor.z, 3.0, 0.01);
 
-  // let remove_parameters = {
-  //   'type': tested_sensor
-  // };
-  // await test_driver.remove_fake_sensor(remove_parameters);
+  let remove_parameters = {
+    'type': sensorType
+  };
+  test_driver.remove_virtual_sensor(remove_parameters);
+
+  await watcher.wait_for('error');
+
+  console.trace("JV666 TEST_END")
+}, "Check that sensor values are updated");
+
+// Test with multiple updates seems to fail more easily with
+// "assert_true: Not expecting event, but got reading event expected true got false".
+// error code.
+promise_test(async t => {
+  let sensorType = 'gyroscope'
+  let create_parameters = {
+    'type': sensorType
+  };
+  console.trace("JV666 CreateFakeSensor")
+  await test_driver.create_virtual_sensor(create_parameters);
+
+  console.trace("JV666 sensor_start")
+  let sensor = new Gyroscope();
+  t.add_cleanup(async () => {
+    sensor.stop();
+    await test_driver.remove_virtual_sensor({type: sensorType});
+  });
+
+  const watcher = new EventWatcher(t, sensor, ['activate', 'reading', 'error']);
+  sensor.start();
+  await watcher.wait_for('activate');
+
+  // Waiting for debugging
+  let update_parameters = {
+    'type': sensorType,
+    'x': 1.0,
+    'y': 2.0,
+    'z': 3.0
+  };
+  await test_driver.update_virtual_sensor(update_parameters);
+
+  await watcher.wait_for('reading');
+  assert_approx_equals(sensor.x, 1.0, 0.01);
+  assert_approx_equals(sensor.y, 2.0, 0.01);
+  assert_approx_equals(sensor.z, 3.0, 0.01);
+
+  update_parameters = {
+    'type': sensorType,
+    'x': 100.0,
+    'y': 200.0,
+    'z': 300.0
+  };
+  await test_driver.update_virtual_sensor(update_parameters);
+
+  await watcher.wait_for('reading');
+  assert_approx_equals(sensor.x, 100.0, 0.01);
+  assert_approx_equals(sensor.y, 200.0, 0.01);
+  assert_approx_equals(sensor.z, 300.0, 0.01);
+
+  let remove_parameters = {
+    'type': sensorType
+  };
+  test_driver.remove_virtual_sensor(remove_parameters);
+
+  await watcher.wait_for('error');
 
   console.trace("JV666 TEST_END")
 }, "Sensor test");
