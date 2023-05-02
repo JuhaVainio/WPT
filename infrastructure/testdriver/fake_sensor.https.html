@@ -49,27 +49,25 @@ promise_test(async t => {
   const sensorType = 'gyroscope';
   let create_parameters = {
     'type': sensorType,
-    'minSamplingFrequency': 6
+    'minSamplingFrequency': 6.0
   };
 
   await test_driver.create_virtual_sensor(create_parameters);
 
-  let sensor = new Gyroscope();
+  let sensor = new Gyroscope({frequency: 5.0});
   t.add_cleanup(async () => {
     sensor.stop();
     await test_driver.remove_virtual_sensor({type: sensorType});
   });
 
-  const watcher = new EventWatcher(t, sensor, ['information', 'activate', 'reading', 'error']);
+  const watcher = new EventWatcher(t, sensor, ['activate', 'reading', 'error']);
   sensor.start();
   await watcher.wait_for('activate');
 
   let info = await test_driver.get_virtual_sensor_information({'type': sensorType});
 
   assert_equals(true, info['isReadingData']);
-  // ToDo Why service returns 10 and not 6
-  assert_equals(10.0, info['requestedSamplingFrequency']);
-
+  assert_equals(create_parameters['minSamplingFrequency'], info['requestedSamplingFrequency']);
 }, "Test sensor with minimum frequency");
 
 promise_test(async t => {
