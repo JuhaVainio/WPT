@@ -96,7 +96,7 @@ promise_test(async t => {
     'y': 2.0,
     'z': 3.0
   };
-  await test_driver.update_virtual_sensor(update_parameters);
+  test_driver.update_virtual_sensor(update_parameters);
 
   await watcher.wait_for('reading');
   assert_approx_equals(sensor.x, 1.0, 0.01);
@@ -113,9 +113,6 @@ promise_test(async t => {
   console.trace("JV666 TEST_END")
 }, "Check that sensor values are updated");
 
-// Test with multiple updates seems to fail more easily with
-// "assert_true: Not expecting event, but got reading event expected true got false".
-// error code.
 promise_test(async t => {
   let sensorType = 'gyroscope'
   let create_parameters = {
@@ -135,14 +132,13 @@ promise_test(async t => {
   sensor.start();
   await watcher.wait_for('activate');
 
-  // Waiting for debugging
   let update_parameters = {
     'type': sensorType,
     'x': 1.0,
     'y': 2.0,
     'z': 3.0
   };
-  await test_driver.update_virtual_sensor(update_parameters);
+  test_driver.update_virtual_sensor(update_parameters);
 
   await watcher.wait_for('reading');
   assert_approx_equals(sensor.x, 1.0, 0.01);
@@ -155,7 +151,7 @@ promise_test(async t => {
     'y': 200.0,
     'z': 300.0
   };
-  await test_driver.update_virtual_sensor(update_parameters);
+  test_driver.update_virtual_sensor(update_parameters);
 
   await watcher.wait_for('reading');
   assert_approx_equals(sensor.x, 100.0, 0.01);
@@ -170,6 +166,6 @@ promise_test(async t => {
   await watcher.wait_for('error');
 
   console.trace("JV666 TEST_END")
-}, "Sensor test");
+}, "Check that sensor values can be updated multiple times");
 
 </script>
