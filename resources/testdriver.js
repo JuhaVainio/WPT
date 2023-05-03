@@ -682,35 +682,29 @@
         },
 
         /**
-         * Creates a virtual sensor
-         *
-         * This function creates a virtual sensor for use with the Sensors APIs.
+         * Creates a virtual sensor for use with the Sensors APIs.
          *
          * Matches the `Create mock sensor
          * <https://w3c.github.io/sensors/#create-mock-sensor-command>`_
          * WebDriver command.
          *
          * Sensor types are defined in `Mock sensor type
-         * <https://w3c.github.io/sensors/#section-mock-sensor-type>`
+         * <https://w3c.github.io/sensors/#section-mock-sensor-type>`_.
          *
-         * @param {Object} create_parameters - An object for create parameters
-         *      Key         Description                             Value type
-         *      ==============================================================
-         *      type        Sensor type                             string
-         *      connected   Indicates a mock sensor's connection    boolean
-         *                  flag which is used for switching the
-         *                  connection between Sensor object and
-         *                  mock sensor. When set to false the user
-         *                  agent must force the result of invoking
-         *                  connect to sensor with mock sensor's
-         *                  associated Sensor object as argument to
-         *                  false, otherwise true.
+         * @param {Object} create_parameters - An object for create parameters.
+         * Holds "``type``" key as string value. And "``connected``" key as
+         * boolean value. "``connected``" indicates a mock sensor's connection
+         * flag which is used for switching the connection between Sensor
+         * object and mock sensor. When set to false the user agent must force
+         * the result of invoking connect to sensor with mock sensor's
+         * associated Sensor object as argument to false, otherwise true.
          *
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} - ToDo
+         * @returns {Promise} Fulfilled after virtual sensor has been created,
+         * or rejected in the cases the WebDriver command errors.
          */
         create_virtual_sensor: function(create_parameters, context=null) {
           console.trace(`JV666 > WPT resources/testdriver.js create_virtual_sensor()`);
@@ -719,73 +713,42 @@
         },
 
         /**
-         * Updates a virtual sensor
-         *
-         * This function updates a virtual sensor values.
+         * Updates values to created virtual sensor.
          *
          * Matches the `Update mock sensor reading
          * <https://w3c.github.io/sensors/#update-mock-sensor-reading-command>`_
          * WebDriver command.
          *
-         * @param {Object} update_parameters - An object for update parameters
-         *      Key         Description                          Value type
-         *      ===========================================================
-         *      type        Sensor type                          string
-         *      readings    New sensor values. Sensor specific   object
+         * List of sensor specific "``readings``" objects.
          *
-         * Sensor specific reading object
-         * `ambient-light
-         * <https://w3c.github.io/ambient-light/#mock-ambient-light-sensor-type>`
-         *      Key         Description     Value type
-         *      ======================================
-         *      illuminance sensor value    double
+         * Sensors with single value:
          *
-         * Example
-         *      {
-         *      'type': 'ambient-light'
-         *      'illuminance': 1.0
-         *      }
+         *  * Ambient light: `AmbientLightReadingValues <https://w3c.github.io/ambient-light/#dictdef-ambientlightreadingvalues>`_.
          *
-         * accelerometer, gravity, gyroscope, linear-acceleration and
-         * magnetometer
-         *      Key     Description     Value type
-         *      ==================================
-         *      x       value for X     double
-         *      y       value for Y     double
-         *      z       value for Z     double
+         * Sensors with three values:
          *
-         * Example
-         *      {
-         *      'type': 'accelerometer'
-         *      'x': 1.0
-         *      'y': 2.0
-         *      'z': 3.0
-         *      }
+         *  * Accelerometer: `AccelerometerReadingValues <https://w3c.github.io/accelerometer/#dictdef-accelerometerreadingvalues>`_.
+         *  * Gravity: `GravityReadingValues <https://w3c.github.io/accelerometer/#dictdef-gravityreadingvalues>`_.
+         *  * Gyroscope: `GyroscopeReadingValues <https://w3c.github.io/gyroscope/#dictdef-gyroscopereadingvalues>`_.
+         *  * Linear acceleration: `LinearAccelerationReadingValues <https://w3c.github.io/accelerometer/#dictdef-linearaccelerationreadingvalues>`_.
+         *  * Magnetometer: `MagnetometerReadingValues <https://w3c.github.io/magnetometer/#dictdef-magnetometerreadingvalues>`_.
          *
-         * absolute-orientation and relative-orientation
-         *      Key     Description     Value type
-         *      ==================================
-         *      x       value for X     double
-         *      y       value for Y     double
-         *      z       value for Z     double
-         *      w       value for W     double
+         * Sensors with four values:
          *
-         *  Example
-         *      {
-         *      'type': 'absolute-orientation'
-         *      'quaternion' = {
-         *                     'x': 1.0,
-         *                     'y': 2.0,
-         *                     'z': 3.0,
-         *                     'w': 4.0
-         *                     }
-         *      }
+         *  * Absolute orientation: `AbsoluteOrientationReadingValues <https://w3c.github.io/orientation-sensor/#dictdef-absoluteorientationreadingvalues>`_.
+         *  * Relative orientation: `RelativeOrientationReadingValues <https://w3c.github.io/orientation-sensor/#dictdef-relativeorientationreadingvalues>`_.
+         *
+         * @param {Object} update_parameters - An object for update parameters.
+         * Holds "``type``" key as string value. And "``readings``" key as
+         * sensor values. Links to sensor specific reading values can be found
+         * in above chapter.
          *
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} - ToDo
+         * @returns {Promise} Fulfilled after virtual sensor has been updated,
+         * or rejected in the cases the WebDriver command errors.
          */
         update_virtual_sensor: function(update_parameters, context=null) {
           console.trace(`JV666 > WPT resources/testdriver.js update_virtual_sensor()`);
@@ -794,24 +757,21 @@
         },
 
         /**
-         * Removes a virtual sensor
-         *
-         * This function removed a virtual sensor.
+         * Removes created virtual sensor.
          *
          * Matches the `Delete mock sensor
          * <https://w3c.github.io/sensors/#delete-mock-sensor-command>`_
          * WebDriver command.
          *
-         * @param {Object} remove_parameters - Sensor to be removed
-         *      Key         Description     Value type
-         *      ======================================
-         *      type        Sensor type     string
+         * @param {Object} remove_parameters - An object for remove parameters.
+         * Holds "``type``" key as string value.
          *
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} - ToDo
+         * @returns {Promise} Fulfilled after virtual sensor has been removed,
+         * or rejected in the cases the WebDriver command errors.
          */
         remove_virtual_sensor: function(remove_parameters, context=null) {
           console.trace(`JV666 > WPT resources/testdriver.js remove_virtual_sensor()`);
@@ -820,24 +780,21 @@
         },
 
         /**
-         * Get virtual sensor information
-         *
-         * This function gets virtual sensor information.
+         * Gets created virtual sensor information.
          *
          * Matches the `Get mock sensor
          * <https://w3c.github.io/sensors/#get-mock-sensor-command>`_
          * WebDriver command.
          *
-         * @param {Object} information_parameters - Sensor to get information
-         *      Key         Description     Value type
-         *      ======================================
-         *      type        Sensor type     string
+         * @param {Object} information_parameters - An object for information
+         * parameters. Holds "``type``" key as string value.
          *
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} - ToDo
+         * @returns {Promise} Returns `serialized mock sensor
+         * <https://w3c.github.io/sensors/#serialized-mock-sensor>`_ as data.
          */
         get_virtual_sensor_information: function(information_parameters, context=null) {
             console.trace(`JV666 > WPT resources/testdriver.js get_virtual_sensor_information()`);
