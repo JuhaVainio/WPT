@@ -43,6 +43,7 @@ from .protocol import (ActionSequenceProtocolPart,
                        SetPermissionProtocolPart,
                        PrintProtocolPart,
                        DebugProtocolPart,
+                       VirtualSensorProtocolPart,
                        merge_dicts)
 
 
@@ -701,6 +702,23 @@ loadDevTools().catch((e) => console.error("Devtools failed to load", e))
 """, asynchronous=True)
 
 
+class MarionetteVirtualSensorProtocolPart(VirtualSensorProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def create_virtual_sensor(self, create_parameters):
+        raise NotImplementedError("create_virtual_sensor not yet implemented")
+
+    def update_virtual_sensor(self, update_parameters):
+        raise NotImplementedError("update_virtual_sensor not yet implemented")
+
+    def remove_virtual_sensor(self, remove_parameters):
+        raise NotImplementedError("remove_virtual_sensor not yet implemented")
+
+    def get_virtual_sensor_information(self, information_parameters):
+        raise NotImplementedError("get_virtual_sensor_information not yet implemented")
+
+
 class MarionetteProtocol(Protocol):
     implements = [MarionetteBaseProtocolPart,
                   MarionetteTestharnessProtocolPart,
@@ -719,7 +737,8 @@ class MarionetteProtocol(Protocol):
                   MarionetteVirtualAuthenticatorProtocolPart,
                   MarionetteSetPermissionProtocolPart,
                   MarionettePrintProtocolPart,
-                  MarionetteDebugProtocolPart]
+                  MarionetteDebugProtocolPart,
+                  MarionetteVirtualSensorProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):
         do_delayed_imports()
