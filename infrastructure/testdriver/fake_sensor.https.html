@@ -71,6 +71,41 @@ promise_test(async t => {
 }, "Test sensor with minimum frequency");
 
 promise_test(async t => {
+  const sensorType = 'gyroscope';
+  let sensor = new Gyroscope();
+  t.add_cleanup(async () => {
+    sensor.stop();
+    await test_driver.remove_virtual_sensor({type: sensorType});
+  });
+
+  await test_driver.create_virtual_sensor({type: sensorType});
+  await test_driver.get_virtual_sensor_information({'type': sensorType});
+}, "Test get virtual sensor information");
+
+promise_test(async t => {
+  const sensorType = 'gyroscope';
+  await test_driver.create_virtual_sensor({type: sensorType});
+
+  let sensor = new Gyroscope();
+  t.add_cleanup(async () => {
+    sensor.stop();
+    await test_driver.remove_virtual_sensor({type: sensorType});
+  });
+
+  let update_parameters = {
+    'type': sensorType,
+    'x': 1.0,
+    'y': 2.0,
+    'z': 3.0
+  };
+  test_driver.update_virtual_sensor(update_parameters);
+}, "Test update virtual sensor");
+
+promise_test(async t => {
+  test_driver.remove_virtual_sensor({'type': 'gyroscope'});
+}, "Test remove virtual sensor");
+
+promise_test(async t => {
   let sensorType = 'gyroscope'
   let create_parameters = {
     'type': sensorType
@@ -89,7 +124,6 @@ promise_test(async t => {
   sensor.start();
   await watcher.wait_for('activate');
 
-  // Waiting for debugging
   let update_parameters = {
     'type': sensorType,
     'x': 1.0,
