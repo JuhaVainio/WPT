@@ -692,16 +692,19 @@
          * <https://w3c.github.io/sensors/#section-mock-sensor-type>`_.
          *
          * @param {Object} create_parameters - An object for create parameters.
-         * Holds "``type``" key as value. And "``connected``" key as
-         * boolean value. "``connected``" indicates a mock sensor's connection
+         * "``type``" key holds `MockSensorType
+         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ value.
+         * "``connected``" key holds boolean value. "``connected``" indicates a mock sensor's connection
          * flag which is used for switching the connection between Sensor
          * object and mock sensor. When set to false the user agent must force
          * the result of invoking connect to sensor with mock sensor's
          * associated Sensor object as argument to false, otherwise true.
-         *
-         * @param {Object} create_parameters2 - An `MockSensorConfiguration
-         * <https://w3c.github.io/sensors/#dictdef-mocksensorconfiguration>`_
-         * dictionary for create parameters.
+         * "``maxSamplingFrequency``" key holds a double representing frequency
+         * in Hz that is used to set maximum supported sampling frequency for
+         * the associated mock sensor.
+         * "``maxSamplingFrequency``" key holds a double representing frequency
+         * in Hz that is used to set minimum supported sampling frequency for
+         * the associated mock sensor.
          *
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
