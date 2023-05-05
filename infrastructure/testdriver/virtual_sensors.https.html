@@ -41,12 +41,12 @@ promise_test(async t => {
 
 promise_test(async t => {
   const sensorType = 'gyroscope';
-  const create_parameters = {
+  const createParameters = {
     'type': sensorType,
     'minSamplingFrequency': 6.0
   };
 
-  await test_driver.create_virtual_sensor(create_parameters);
+  await test_driver.create_virtual_sensor(createParameters);
 
   const sensor = new Gyroscope({frequency: 5.0});
   t.add_cleanup(async () => {
@@ -61,11 +61,10 @@ promise_test(async t => {
   const info = await test_driver.get_virtual_sensor_information(
     {'type': sensorType});
 
-  assert_equals(true, info['isReadingData']);
-  assert_equals(create_parameters['minSamplingFrequency'],
-                info['requestedSamplingFrequency']);
-}, "Test that minimum frequency setting works and virtual sensor information\
-    can be fetched.");
+  assert_equals(info['isReadingData'], true);
+  assert_equals(info['requestedSamplingFrequency'],
+                createParameters['minSamplingFrequency']);
+}, "Test that minimum frequency setting works and virtual sensor information can be fetched.");
 
 promise_test(async t => {
   const sensorType = 'accelerometer';
@@ -81,7 +80,7 @@ promise_test(async t => {
   sensor.start();
   await watcher.wait_for('activate');
 
-  const update_parameters = {
+  const updateParameters = {
     'type': sensorType,
     'reading': {
         'x': 1.0,
@@ -89,13 +88,12 @@ promise_test(async t => {
         'z': 3.0
     }
   };
-  test_driver.update_virtual_sensor(update_parameters);
+  test_driver.update_virtual_sensor(updateParameters);
 
   await watcher.wait_for('reading');
-  assert_equals(sensor.x, update_parameters.reading.x);
-  assert_equals(sensor.y, update_parameters.reading.y);
-  assert_equals(sensor.z, update_parameters.reading.z);
-
+  assert_equals(sensor.x, updateParameters.reading.x);
+  assert_equals(sensor.y, updateParameters.reading.y);
+  assert_equals(sensor.z, updateParameters.reading.z);
 }, "Test that virtual sensor can be updated.");
 
 </script>
