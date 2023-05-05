@@ -692,12 +692,16 @@
          * <https://w3c.github.io/sensors/#section-mock-sensor-type>`_.
          *
          * @param {Object} create_parameters - An object for create parameters.
-         * Holds "``type``" key as string value. And "``connected``" key as
+         * Holds "``type``" key as value. And "``connected``" key as
          * boolean value. "``connected``" indicates a mock sensor's connection
          * flag which is used for switching the connection between Sensor
          * object and mock sensor. When set to false the user agent must force
          * the result of invoking connect to sensor with mock sensor's
          * associated Sensor object as argument to false, otherwise true.
+         *
+         * @param {Object} create_parameters2 - An `MockSensorConfiguration
+         * <https://w3c.github.io/sensors/#dictdef-mocksensorconfiguration>`_
+         * dictionary for create parameters.
          *
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
@@ -719,7 +723,7 @@
          * <https://w3c.github.io/sensors/#update-mock-sensor-reading-command>`_
          * WebDriver command.
          *
-         * List of sensor specific "``readings``" objects.
+         * List of sensor specific "``reading``" objects.
          *
          * Sensors with single value:
          *
@@ -739,9 +743,12 @@
          *  * Relative orientation: `RelativeOrientationReadingValues <https://w3c.github.io/orientation-sensor/#dictdef-relativeorientationreadingvalues>`_.
          *
          * @param {Object} update_parameters - An object for update parameters.
-         * Holds "``type``" key as string value. And "``readings``" key as
-         * sensor values. Links to sensor specific reading values can be found
-         * in above chapter.
+         * "``type``" key holds `MockSensorType
+         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ value.
+         * And "``reading``" key as new sensor values. Sensor values format
+         * depend on used sensor. Used keys are defined in each sensor
+         * specification. Links to sensor specific specs are listed in above
+         * chapter.
          *
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
@@ -764,7 +771,8 @@
          * WebDriver command.
          *
          * @param {Object} remove_parameters - An object for remove parameters.
-         * Holds "``type``" key as string value.
+         * "``type``" key holds `MockSensorType
+         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ value.
          *
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
@@ -787,7 +795,8 @@
          * WebDriver command.
          *
          * @param {Object} information_parameters - An object for information
-         * parameters. Holds "``type``" key as string value.
+         * parameters. "``type``" key holds `MockSensorType
+         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ value.
          *
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
