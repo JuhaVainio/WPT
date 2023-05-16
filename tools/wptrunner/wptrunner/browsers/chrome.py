@@ -91,6 +91,9 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     # on Linux as it hasn't shipped there yet, but in WPT we enable virtual
     # authenticator devices anyway for testing and so SPC works.
     chrome_options["args"].append("--enable-features=SecurePaymentConfirmationBrowser")
+    # The GenericSensorExtraClasses flag enables the browser-side
+    # implementation of sensors such as Ambient Light Sensor.
+    chrome_options["args"].append("--enable-features=GenericSensorExtraClasses")
 
     # Classify `http-private`, `http-public` and https variants in the
     # appropriate IP address spaces.
