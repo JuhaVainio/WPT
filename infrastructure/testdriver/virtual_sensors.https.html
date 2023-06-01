@@ -10,6 +10,7 @@
 
 promise_test(async t => {
   const sensorType = 'gyroscope';
+  await test_driver.set_permission({name: sensorType}, 'granted');
   await test_driver.create_virtual_sensor({type: sensorType});
 
   const sensor = new Gyroscope();
@@ -25,6 +26,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const sensorType = 'gyroscope';
+  await test_driver.set_permission({name: sensorType}, 'granted');
   await test_driver.create_virtual_sensor({type: sensorType, connected: false});
 
   const sensor = new Gyroscope();
@@ -45,7 +47,7 @@ promise_test(async t => {
     'type': sensorType,
     'minSamplingFrequency': 6.0
   };
-
+  await test_driver.set_permission({name: sensorType}, 'granted');
   await test_driver.create_virtual_sensor(createParameters);
 
   const sensor = new Gyroscope({frequency: 5.0});
@@ -68,6 +70,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const sensorType = 'accelerometer';
+  await test_driver.set_permission({name: sensorType}, 'granted');
   await test_driver.create_virtual_sensor({type: sensorType});
 
   const sensor = new Accelerometer();
