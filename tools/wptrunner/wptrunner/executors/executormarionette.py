@@ -706,10 +706,10 @@ class MarionetteVirtualSensorProtocolPart(VirtualSensorProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
 
-    def create_virtual_sensor(self, create_parameters):
+    def create_virtual_sensor(self, sensor_type, sensor_params):
         raise NotImplementedError("create_virtual_sensor not yet implemented")
 
-    def update_virtual_sensor(self, update_parameters):
+    def update_virtual_sensor(self, sensor_type, reading):
         raise NotImplementedError("update_virtual_sensor not yet implemented")
 
     def remove_virtual_sensor(self, remove_parameters):
