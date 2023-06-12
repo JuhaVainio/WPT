@@ -693,8 +693,8 @@
          *
          * @param {String} sensor_type - The `MockSensorType
          * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ identifier.
-         * @param {MockSensor} sensor_params - A `MockSensor
-         * <https://w3c.github.io/sensors/#dictionary-mocksensor>`_ dictionary.
+         * @param {MockSensorConfiguration} sensor_params - A `MockSensorConfiguration
+         * <https://w3c.github.io/sensors/#dictionary-mocksensorconfiguration>`_ dictionary.
          * This parameter is optional, default values will be used if not specified.
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
