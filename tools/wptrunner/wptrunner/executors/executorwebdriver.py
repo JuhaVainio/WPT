@@ -351,20 +351,13 @@ class WebDriverDebugProtocolPart(DebugProtocolPart):
         raise NotImplementedError()
 
 
-class WebDriverVirtualSensor(VirtualSensorProtocolPart):
+class WebDriverVirtualSensorPart(VirtualSensorProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
     def create_virtual_sensor(self, sensor_type, sensor_params):
-        if isinstance(sensor_params, dict):
-            body = {
-              "type": sensor_type,
-              "connected": sensor_params.get('connected', True),
-              "minSamplingFrequency": sensor_params.get('minSamplingFrequency'),
-              "maxSamplingFrequency": sensor_params.get('maxSamplingFrequency')
-            }
-        else:
-            body = {"type": sensor_type}
+        body = {"type": sensor_type}
+        body.update(sensor_params)
         return self.webdriver.send_session_command("POST", "sensor", body)
 
     def update_virtual_sensor(self, sensor_type, reading):
@@ -376,6 +369,7 @@ class WebDriverVirtualSensor(VirtualSensorProtocolPart):
 
     def get_virtual_sensor_information(self, sensor_type):
         return self.webdriver.send_session_command("GET", "sensor/%s" % sensor_type)
+
 
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
@@ -393,7 +387,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverVirtualAuthenticatorProtocolPart,
                   WebDriverSPCTransactionsProtocolPart,
                   WebDriverDebugProtocolPart,
-                  WebDriverVirtualSensor]
+                  WebDriverVirtualSensorPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)

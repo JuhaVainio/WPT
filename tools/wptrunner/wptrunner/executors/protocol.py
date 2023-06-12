@@ -709,6 +709,7 @@ class WdspecProtocol(ConnectionlessProtocol):
         res = conn.getresponse()
         return res.status == 404
 
+
 class VirtualSensorProtocolPart(ProtocolPart):
     """Protocol part for Sensors"""
     __metaclass__ = ABCMeta
