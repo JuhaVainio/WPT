@@ -281,57 +281,51 @@ class CreateVirtualSensorAction:
     name = "create_virtual_sensor"
 
     def __init__(self, logger, protocol):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py CreateVirtualSensorAction init()\n")
         self.logger = logger
         self.protocol = protocol
 
     def __call__(self, payload):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py CreateVirtualSensorAction call()\n")
-        print(payload)
-        create_parameters = payload["create_parameters"]
-        return self.protocol.virtual_sensor.create_virtual_sensor(create_parameters)
+        sensor_type = payload["sensor_type"]
+        sensor_params = payload["sensor_params"]
+        self.logger.debug("Creating %s sensor with %s values" % (sensor_type, sensor_params))
+        return self.protocol.virtual_sensor.create_virtual_sensor(sensor_type, sensor_params)
 
 class UpdateVirtualSensorAction:
     name = "update_virtual_sensor"
 
     def __init__(self, logger, protocol):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py UpdateVirtualSensorAction init()\n")
         self.logger = logger
         self.protocol = protocol
 
     def __call__(self, payload):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py UpdateVirtualSensorAction call()\n")
-        print(payload)
-        update_parameters = payload["update_parameters"]
-        return self.protocol.virtual_sensor.update_virtual_sensor(update_parameters)
+        sensor_type = payload["sensor_type"]
+        reading = payload["reading"]
+        self.logger.debug("Updating %s sensor with new readings: %s" % (sensor_type, reading))
+        return self.protocol.virtual_sensor.update_virtual_sensor(sensor_type, reading)
 
 class RemoveVirtualSensorAction:
     name = "remove_virtual_sensor"
 
     def __init__(self, logger, protocol):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py RemoveVirtualSensorAction init()\n")
         self.logger = logger
         self.protocol = protocol
 
     def __call__(self, payload):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py RemoveVirtualSensorAction call()\n")
-        print(payload)
-        remove_parameters = payload["remove_parameters"]
-        return self.protocol.virtual_sensor.remove_virtual_sensor(remove_parameters)
+        sensor_type = payload["sensor_type"]
+        self.logger.debug("Removing %s sensor" % sensor_type)
+        return self.protocol.virtual_sensor.remove_virtual_sensor(sensor_type)
 
-class GetVirtualSensorInformation:
+class GetVirtualSensorInformationAction:
     name = "get_virtual_sensor_information"
 
     def __init__(self, logger, protocol):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py GetVirtualSensorInformation init()\n")
         self.logger = logger
         self.protocol = protocol
 
     def __call__(self, payload):
-        print("JV666 > tools/wptrunner/wptrunner/executors/actions.py GetVirtualSensorInformation call()\n")
-        print(payload)
-        information_parameters = payload["information_parameters"]
-        return self.protocol.virtual_sensor.get_virtual_sensor_information(information_parameters)
+        sensor_type = payload["sensor_type"]
+        self.logger.debug("Requesting information from %s sensor" % sensor_type)
+        return self.protocol.virtual_sensor.get_virtual_sensor_information(sensor_type)
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
@@ -356,4 +350,4 @@ actions = [ClickAction,
            CreateVirtualSensorAction,
            UpdateVirtualSensorAction,
            RemoveVirtualSensorAction,
-           GetVirtualSensorInformation]
+           GetVirtualSensorInformationAction]

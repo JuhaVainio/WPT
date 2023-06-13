@@ -269,27 +269,19 @@
         return create_action("set_spc_transaction_mode", {mode, context});
     };
 
-    window.test_driver_internal.create_virtual_sensor = function(create_parameters, context = null) {
-        console.trace("JV666 > tools/wptrunner/wptrunner/testdriver-extra.js create_virtual_sensor()");
-        console.trace(JSON.stringify(create_parameters));
-        return create_action("create_virtual_sensor", {create_parameters, context});
+    window.test_driver_internal.create_virtual_sensor = function(sensor_type, sensor_params={}, context=null) {
+        return create_action("create_virtual_sensor", {sensor_type, sensor_params, context});
     };
 
-    window.test_driver_internal.update_virtual_sensor = function(update_parameters, context = null) {
-        console.trace("JV666 > tools/wptrunner/wptrunner/testdriver-extra.js update_virtual_sensor()");
-        console.trace(JSON.stringify(update_parameters));
-        return create_action("update_virtual_sensor", {update_parameters, context});
+    window.test_driver_internal.update_virtual_sensor = function(sensor_type, reading, context=null) {
+        return create_action("update_virtual_sensor", {sensor_type, reading, context});
     };
 
-    window.test_driver_internal.remove_virtual_sensor = function(remove_parameters, context = null) {
-        console.trace("JV666 > tools/wptrunner/wptrunner/testdriver-extra.js remove_virtual_sensor()");
-        console.trace(JSON.stringify(remove_parameters));
-        return create_action("remove_virtual_sensor", {remove_parameters, context});
+    window.test_driver_internal.remove_virtual_sensor = function(sensor_type, context=null) {
+        return create_action("remove_virtual_sensor", {sensor_type, context});
     };
 
-    window.test_driver_internal.get_virtual_sensor_information = function(information_parameters, context = null) {
-        console.trace("JV666 > tools/wptrunner/wptrunner/testdriver-extra.js get_virtual_sensor_information()");
-        console.trace(JSON.stringify(information_parameters));
-        return create_action("get_virtual_sensor_information", {information_parameters, context});
+    window.test_driver_internal.get_virtual_sensor_information = function(sensor_type, context=null) {
+        return create_action("get_virtual_sensor_information", {sensor_type, context});
     };
 })();

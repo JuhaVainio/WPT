@@ -709,6 +709,7 @@ class WdspecProtocol(ConnectionlessProtocol):
         res = conn.getresponse()
         return res.status == 404
 
+
 class VirtualSensorProtocolPart(ProtocolPart):
     """Protocol part for Sensors"""
     __metaclass__ = ABCMeta
@@ -716,14 +717,17 @@ class VirtualSensorProtocolPart(ProtocolPart):
     name = "virtual_sensor"
 
     @abstractmethod
-    def create_virtual_sensor(self, create_parameters):
+    def create_virtual_sensor(self, sensor_type, sensor_params):
         pass
 
-    def update_virtual_sensor(self, update_parameters):
+    @abstractmethod
+    def update_virtual_sensor(self, sensor_type, reading):
         pass
 
-    def remove_virtual_sensor(self, remove_parameters):
+    @abstractmethod
+    def remove_virtual_sensor(self, sensor_type):
         pass
 
-    def get_virtual_sensor_information(self, information_parameters):
+    @abstractmethod
+    def get_virtual_sensor_information(self, sensor_type):
         pass

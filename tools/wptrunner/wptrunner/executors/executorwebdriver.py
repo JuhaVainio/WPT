@@ -351,29 +351,25 @@ class WebDriverDebugProtocolPart(DebugProtocolPart):
         raise NotImplementedError()
 
 
-class WebDriverVirtualSensor(VirtualSensorProtocolPart):
+class WebDriverVirtualSensorPart(VirtualSensorProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    def create_virtual_sensor(self, create_parameters):
-        print("JV666 > tools/wptrunner/wptrunner/executors/executorwebdriver.py create_virtual_sensor()\n")
-        print(create_parameters)
-        return self.webdriver.send_session_command("POST", "sensor", create_parameters)
+    def create_virtual_sensor(self, sensor_type, sensor_params):
+        body = {"type": sensor_type}
+        body.update(sensor_params)
+        return self.webdriver.send_session_command("POST", "sensor", body)
 
-    def update_virtual_sensor(self, update_parameters):
-        print("JV666 > tools/wptrunner/wptrunner/executors/executorwebdriver.py update_virtual_sensor()\n")
-        type = update_parameters["type"]
-        return self.webdriver.send_session_command("POST", "sensor/%s" % type, update_parameters)
+    def update_virtual_sensor(self, sensor_type, reading):
+        body = {"reading": reading}
+        return self.webdriver.send_session_command("POST", "sensor/%s" % sensor_type, body)
 
-    def remove_virtual_sensor(self, remove_parameters):
-        print("JV666 > tools/wptrunner/wptrunner/executors/executorwebdriver.py remove_virtual_sensor()\n")
-        type = remove_parameters["type"]
-        return self.webdriver.send_session_command("DELETE", "sensor/%s" % type, remove_parameters)
+    def remove_virtual_sensor(self, sensor_type):
+        return self.webdriver.send_session_command("DELETE", "sensor/%s" % sensor_type)
 
-    def get_virtual_sensor_information(self, information_parameters):
-        print("JV666 > tools/wptrunner/wptrunner/executors/executorwebdriver.py get_virtual_sensor_information()\n")
-        type = information_parameters["type"]
-        return self.webdriver.send_session_command("GET", "sensor/%s" % type, information_parameters)
+    def get_virtual_sensor_information(self, sensor_type):
+        return self.webdriver.send_session_command("GET", "sensor/%s" % sensor_type)
+
 
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
@@ -391,7 +387,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverVirtualAuthenticatorProtocolPart,
                   WebDriverSPCTransactionsProtocolPart,
                   WebDriverDebugProtocolPart,
-                  WebDriverVirtualSensor]
+                  WebDriverVirtualSensorPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)

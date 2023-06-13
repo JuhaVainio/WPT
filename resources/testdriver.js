@@ -691,79 +691,49 @@
          * Sensor types are defined in `Mock sensor type
          * <https://w3c.github.io/sensors/#section-mock-sensor-type>`_.
          *
-         * @param {Object} create_parameters - An object for create parameters.
-         * "``type``" key holds `MockSensorType
-         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ value.
-         * "``connected``" key holds boolean value. "``connected``" indicates a mock sensor's connection
-         * flag which is used for switching the connection between Sensor
-         * object and mock sensor. When set to false the user agent must force
-         * the result of invoking connect to sensor with mock sensor's
-         * associated Sensor object as argument to false, otherwise true.
-         * "``maxSamplingFrequency``" key holds a double representing frequency
-         * in Hz that is used to set maximum supported sampling frequency for
-         * the associated mock sensor.
-         * "``maxSamplingFrequency``" key holds a double representing frequency
-         * in Hz that is used to set minimum supported sampling frequency for
-         * the associated mock sensor.
-         *
+         * @param {String} sensor_type - The `MockSensorType
+         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ identifier.
+         * @param {MockSensorConfiguration} sensor_params - A `MockSensorConfiguration
+         * <https://w3c.github.io/sensors/#dictionary-mocksensorconfiguration>`_ dictionary.
+         * This parameter is optional, default values will be used if not specified.
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} Fulfilled after virtual sensor has been created,
-         * or rejected in the cases the WebDriver command errors.
+         * @returns {Promise} Fulfilled after virtual sensor has been created.
+         * Rejected in the cases the WebDriver command errors or if a virtual
+         * sensor of the same type already exists.
          */
-        create_virtual_sensor: function(create_parameters, context=null) {
-          console.trace(`JV666 > WPT resources/testdriver.js create_virtual_sensor()`);
-          console.trace(JSON.stringify(create_parameters));
-          return window.test_driver_internal.create_virtual_sensor(create_parameters, context);
+        create_virtual_sensor: function(sensor_type, sensor_params={}, context=null) {
+          return window.test_driver_internal.create_virtual_sensor(sensor_type, sensor_params, context);
         },
 
         /**
-         * Updates values to created virtual sensor.
+         * Causes the virtual sensor to behave as if a new reading was available
+         * from the platform sensor. New values may also be discarded due to the
+         * checks in `update latest reading
+         * <https://w3c.github.io/sensors/#update-latest-reading>`_.
          *
          * Matches the `Update mock sensor reading
          * <https://w3c.github.io/sensors/#update-mock-sensor-reading-command>`_
          * WebDriver command.
          *
-         * List of sensor specific "``reading``" objects.
-         *
-         * Sensors with single value:
-         *
-         *  * Ambient light: `AmbientLightReadingValues <https://w3c.github.io/ambient-light/#dictdef-ambientlightreadingvalues>`_.
-         *
-         * Sensors with three values:
-         *
-         *  * Accelerometer: `AccelerometerReadingValues <https://w3c.github.io/accelerometer/#dictdef-accelerometerreadingvalues>`_.
-         *  * Gravity: `GravityReadingValues <https://w3c.github.io/accelerometer/#dictdef-gravityreadingvalues>`_.
-         *  * Gyroscope: `GyroscopeReadingValues <https://w3c.github.io/gyroscope/#dictdef-gyroscopereadingvalues>`_.
-         *  * Linear acceleration: `LinearAccelerationReadingValues <https://w3c.github.io/accelerometer/#dictdef-linearaccelerationreadingvalues>`_.
-         *  * Magnetometer: `MagnetometerReadingValues <https://w3c.github.io/magnetometer/#dictdef-magnetometerreadingvalues>`_.
-         *
-         * Sensors with four values:
-         *
-         *  * Absolute orientation: `AbsoluteOrientationReadingValues <https://w3c.github.io/orientation-sensor/#dictdef-absoluteorientationreadingvalues>`_.
-         *  * Relative orientation: `RelativeOrientationReadingValues <https://w3c.github.io/orientation-sensor/#dictdef-relativeorientationreadingvalues>`_.
-         *
-         * @param {Object} update_parameters - An object for update parameters.
-         * "``type``" key holds `MockSensorType
-         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ value.
-         * And "``reading``" key as new sensor values. Sensor values format
-         * depend on used sensor. Used keys are defined in each sensor
-         * specification. Links to sensor specific specs are listed in above
-         * chapter.
-         *
+         * @param {String} sensor_type - The `MockSensorType
+         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ identifier.
+         * @param {MockSensorReadingValues} reading - A `MockSensorReadingValues
+         * <https://w3c.github.io/sensors/#dictdef-mocksensorreadingvalues>`_ dictionary.
+         * Each sensor type has a specific reading format, which is defined in each `extension specifications
+         * <https://w3c.github.io/sensors/#extension-specification>`_.
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} Fulfilled after virtual sensor has been updated,
-         * or rejected in the cases the WebDriver command errors.
+         * @returns {Promise} Fulfilled after virtual sensor has been updated.
+         * Rejected in the cases the WebDriver command errors or if a virtual
+         * sensor of the given type does not exist.
          */
-        update_virtual_sensor: function(update_parameters, context=null) {
-          console.trace(`JV666 > WPT resources/testdriver.js update_virtual_sensor()`);
-          console.trace(JSON.stringify(update_parameters));
-          return window.test_driver_internal.update_virtual_sensor(update_parameters, context);
+        update_virtual_sensor: function(sensor_type, reading, context=null) {
+          return window.test_driver_internal.update_virtual_sensor(sensor_type, reading, context);
         },
 
         /**
@@ -773,21 +743,18 @@
          * <https://w3c.github.io/sensors/#delete-mock-sensor-command>`_
          * WebDriver command.
          *
-         * @param {Object} remove_parameters - An object for remove parameters.
-         * "``type``" key holds `MockSensorType
-         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ value.
-         *
+         * @param {String} sensor_type - The `MockSensorType
+         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ identifier.
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} Fulfilled after virtual sensor has been removed,
-         * or rejected in the cases the WebDriver command errors.
+         * @returns {Promise} Fulfilled after virtual sensor has been removed
+         * or no virtual sensor of the given type has been created. Rejected in
+         * the cases the WebDriver command errors.
          */
-        remove_virtual_sensor: function(remove_parameters, context=null) {
-          console.trace(`JV666 > WPT resources/testdriver.js remove_virtual_sensor()`);
-          console.trace(JSON.stringify(remove_parameters));
-          return window.test_driver_internal.remove_virtual_sensor(remove_parameters, context);
+        remove_virtual_sensor: function(sensor_type, context=null) {
+          return window.test_driver_internal.remove_virtual_sensor(sensor_type, context);
         },
 
         /**
@@ -797,21 +764,19 @@
          * <https://w3c.github.io/sensors/#get-mock-sensor-command>`_
          * WebDriver command.
          *
-         * @param {Object} information_parameters - An object for information
-         * parameters. "``type``" key holds `MockSensorType
-         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ value.
-         *
+         * @param {String} sensor_type - The `MockSensorType
+         * <https://w3c.github.io/sensors/#enumdef-mocksensortype>`_ identifier.
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
          *
          * @returns {Promise} Returns `serialized mock sensor
          * <https://w3c.github.io/sensors/#serialized-mock-sensor>`_ as data.
+         * Rejected in the cases the WebDriver command errors or if a virtual
+         * sensor with the given type does not exist.
          */
-        get_virtual_sensor_information: function(information_parameters, context=null) {
-            console.trace(`JV666 > WPT resources/testdriver.js get_virtual_sensor_information()`);
-            console.trace(JSON.stringify(information_parameters));
-            return window.test_driver_internal.get_virtual_sensor_information(information_parameters, context);
+        get_virtual_sensor_information: function(sensor_type, context=null) {
+            return window.test_driver_internal.get_virtual_sensor_information(sensor_type, context);
           },
     };
 
@@ -938,19 +903,19 @@
             throw new Error("set_spc_transaction_mode() is not implemented by testdriver-vendor.js");
         },
 
-        async create_virtual_sensor(create_parameters, context=null) {
+        async create_virtual_sensor(sensor_type, sensor_params, context=null) {
             throw new Error("create_virtual_sensor() is not implemented by testdriver-vendor.js");
         },
 
-        async update_virtual_sensor(update_parameters, context=null) {
+        async update_virtual_sensor(sensor_type, reading, context=null) {
             throw new Error("update_virtual_sensor() is not implemented by testdriver-vendor.js");
         },
 
-        async remove_virtual_sensor(remove_parameters, context=null) {
+        async remove_virtual_sensor(sensor_type, context=null) {
             throw new Error("remove_virtual_sensor() is not implemented by testdriver-vendor.js");
         },
 
-        async get_virtual_sensor_information(information_parameters, context=null) {
+        async get_virtual_sensor_information(sensor_type, context=null) {
             throw new Error("get_virtual_sensor_information() is not implemented by testdriver-vendor.js");
         },
     };
