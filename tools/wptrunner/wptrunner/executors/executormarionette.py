@@ -24,7 +24,8 @@ from .base import (CallbackHandler,
                    WdspecExecutor,
                    get_pages,
                    strip_server)
-from .protocol import (ActionSequenceProtocolPart,
+from .protocol import (AccessibilityProtocolPart,
+                       ActionSequenceProtocolPart,
                        AssertsProtocolPart,
                        BaseProtocolPart,
                        TestharnessProtocolPart,
@@ -70,6 +71,13 @@ def _switch_to_window(marionette, handle):
     marionette._send_message("WebDriver:SwitchToWindow",
                              {"handle": handle, "name": handle, "focus": True})
     marionette.window = handle
+
+
+class MarionetteCallbackHandler(CallbackHandler):
+
+    def __init__(self, logger, protocol, test_window):
+        MarionetteCallbackHandler.expected_exc = (errors.MarionetteException,)
+        super().__init__(self, logger, protocol, test_window)
 
 
 class MarionetteBaseProtocolPart(BaseProtocolPart):
@@ -702,6 +710,17 @@ loadDevTools().catch((e) => console.error("Devtools failed to load", e))
 """, asynchronous=True)
 
 
+class MarionetteAccessibilityProtocolPart(AccessibilityProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def get_computed_label(self, element):
+        return element.computed_label
+
+    def get_computed_role(self, element):
+        return element.computed_role
+
+
 class MarionetteVirtualSensorProtocolPart(VirtualSensorProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
@@ -738,6 +757,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteSetPermissionProtocolPart,
                   MarionettePrintProtocolPart,
                   MarionetteDebugProtocolPart,
+                  MarionetteAccessibilityProtocolPart,
                   MarionetteVirtualSensorProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):

@@ -292,6 +292,7 @@
     g.addColorStop(0, '#f00');
     g.addColorStop(1, '#f00');
     ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 100, 50);
     g.addColorStop(0.1, '#0f0');
     g.addColorStop(0.9, '#0f0');
     ctx.fillRect(0, 0, 100, 50);
@@ -899,7 +900,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 100, 50);
@@ -907,7 +908,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.basic.canvas
@@ -995,7 +996,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, "");
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 200, 50);
@@ -1003,7 +1004,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.repeat.null
@@ -1086,7 +1087,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var offscreenCanvas2 = new OffscreenCanvas(100, 50);
             var pattern = offscreenCanvas2.getContext('2d').createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = '#f00';
@@ -1094,7 +1095,7 @@
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 100, 50);
             @assert pixel 50,25 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.norepeat.basic
@@ -1111,7 +1112,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 100, 50);
@@ -1119,7 +1120,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.norepeat.outside
@@ -1136,7 +1137,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = '#0f0';
             ctx.fillRect(0, 0, 100, 50);
@@ -1149,7 +1150,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.norepeat.coord1
@@ -1168,7 +1169,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = pattern;
             ctx.translate(50, 0);
@@ -1177,7 +1178,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.norepeat.coord2
@@ -1192,7 +1193,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 50, 50);
@@ -1205,7 +1206,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.norepeat.coord3
@@ -1222,7 +1223,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = pattern;
             ctx.translate(50, 25);
@@ -1233,7 +1234,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.repeat.basic
@@ -1250,7 +1251,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 100, 50);
@@ -1258,7 +1259,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.repeat.outside
@@ -1275,7 +1276,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = pattern;
             ctx.translate(50, 25);
@@ -1284,7 +1285,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.repeat.coord1
@@ -1301,7 +1302,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = pattern;
             ctx.translate(-128, -78);
@@ -1310,7 +1311,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.repeat.coord2
@@ -1325,7 +1326,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 100, 50);
@@ -1333,7 +1334,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.repeat.coord3
@@ -1348,7 +1349,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 100, 50);
@@ -1358,7 +1359,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.repeatx.basic
@@ -1377,7 +1378,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'repeat-x');
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 100, 50);
@@ -1385,7 +1386,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.repeatx.outside
@@ -1402,7 +1403,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'repeat-x');
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 100, 50);
@@ -1412,7 +1413,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.repeatx.coord1
@@ -1429,7 +1430,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'repeat-x');
             ctx.fillStyle = pattern;
             ctx.translate(0, 16);
@@ -1442,7 +1443,7 @@
             @assert pixel 98,25 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.repeaty.basic
@@ -1461,7 +1462,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'repeat-y');
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 100, 50);
@@ -1469,7 +1470,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.repeaty.outside
@@ -1486,7 +1487,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'repeat-y');
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, 100, 50);
@@ -1496,7 +1497,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.repeaty.coord1
@@ -1515,7 +1516,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'repeat-y');
             ctx.fillStyle = pattern;
             ctx.translate(48, 0);
@@ -1528,7 +1529,7 @@
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 50,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.orientation.image
@@ -1546,7 +1547,7 @@
         };
     });
     promise.then(function(response) {
-        createImageBitmap(response).then(bitmap => {
+        return createImageBitmap(response).then(bitmap => {
             var pattern = ctx.createPattern(bitmap, 'no-repeat');
             ctx.fillStyle = pattern;
             ctx.save();
@@ -1559,7 +1560,7 @@
             @assert pixel 98,1 == 0,255,0,255;
             @assert pixel 1,48 == 0,255,0,255;
             @assert pixel 98,48 == 0,255,0,255;
-        }, t_fail);
+        });
     }).then(t_pass, t_fail);
 
 - name: 2d.pattern.paint.orientation.canvas
