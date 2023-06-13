@@ -99,8 +99,18 @@ the global scope.
 .. js:autofunction:: test_driver.set_spc_transaction_mode
 ```
 
-### Sensors ###
+### Federated Credential Management ###
+```eval_rst
+.. js:autofunction:: test_driver.cancel_fedcm_dialog
+.. js:autofunction:: test_driver.select_fedcm_account
+.. js:autofunction:: test_driver.get_fedcm_account_list
+.. js:autofunction:: test_driver.get_fedcm_dialog_title
+.. js:autofunction:: test_driver.get_fedcm_dialog_type
+.. js:autofunction:: test_driver.set_fedcm_delay_enabled
+.. js:autofunction:: test_driver.reset_fedcm_cooldown
+```
 
+### Sensors ###
 ```eval_rst
 .. js:autofunction:: test_driver.create_virtual_sensor
 .. js:autofunction:: test_driver.update_virtual_sensor
