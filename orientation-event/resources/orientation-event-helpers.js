@@ -46,6 +46,42 @@ function sensor_test(func, name, properties) {
   }, name, properties);
 }
 
+async function set_permissions() {
+  await test_driver.set_permission({name: 'accelerometer'}, 'granted');
+  await test_driver.set_permission({name: 'gyroscope'}, 'granted');
+  assert_equals(await DeviceMotionEvent.requestPermission(), 'granted');
+}
+
+async function create_virtual_sensor() {
+  const sensors = ["accelerometer", "linear-acceleration", "gyroscope"];
+  for (const item of sensors) {
+    await test_driver.create_virtual_sensor(item);
+  }
+}
+
+var sensor_objects = {};
+function create_sensor_objects() {
+  sensor_objects.accelerometer = new Accelerometer();
+  sensor_objects.linear_acceleration = new LinearAccelerationSensor();
+  sensor_objects.gyroscope = new Gyroscope();
+}
+
+var sensor_event_watchers = {};
+function create_event_watcher(t) {
+  const event_types = ['activate', 'reading', 'error'];
+  const sensors = ["accelerometer", "linear_acceleration", "gyroscope"];
+  for (const item of sensors) {
+    sensor_event_watchers[item] = new EventWatcher(t, sensor_objects[item], event_types);
+  }
+}
+
+async function createVirtualSensors(t) {
+  await set_permissions();
+  await create_virtual_sensor();
+  create_sensor_objects();
+  create_event_watcher(t);
+}
+
 // If two doubles differ by less than this amount, we can consider them
 // to be effectively equal.
 const EPSILON = 1e-8;
@@ -77,23 +113,45 @@ function generateOrientationData(alpha, beta, gamma, absolute) {
   return orientationData;
 }
 
+var sensor_started = {'accelerometer': false, 'linear-acceleration': false, 'gyroscope': false};
 async function setMockSensorDataForType(sensorProvider, sensorType, mockDataArray) {
-  const createdSensor = await sensorProvider.getCreatedSensor(sensorType);
-  // We call setSensorReadingAndUpdateSharedBuffer() rather than
-  // setSensorReading() to accommodate Blink's Device Orientation
-  // implementation, which uses its own timer to read the sensor's shared
-  // memory buffer rather than relying on SensorReadingChanged(). This timer
-  // may fire out of sync with the JS timer in MockSensor.startReading(), so
-  // the former might read the shared memory buffer before the latter has
-  // updated |this.buffer_|. We thus immediately update the buffer here
-  // (without consuming data from the ring buffer).
-  return createdSensor.setSensorReadingImmediately([mockDataArray]);
+  var type;
+  var sensor;
+  switch (sensorType) {
+    case "Accelerometer":
+      type = 'accelerometer';
+      sensor = 'accelerometer';
+      break;
+    case "LinearAccelerationSensor":
+      type = 'linear-acceleration';
+      sensor = 'linear_acceleration';
+      break;
+    case "Gyroscope":
+      type = 'gyroscope';
+      sensor = 'gyroscope';
+      break;
+    default:
+      console.log(`Illegal sensorType ${sensorType}.`);
+      return;
+    }
+
+    if(!sensor_started[type]) {
+      sensor_objects[sensor].start();
+      assert_false(sensor_objects[sensor].hasReading);
+      await sensor_event_watchers[sensor].wait_for('activate');
+      sensor_started[type] = true;
+    }
+    await Promise.all([
+        test_driver.update_virtual_sensor(type, {"x":mockDataArray[0],"y":mockDataArray[1],"z":mockDataArray[2]}),
+        sensor_event_watchers[sensor].wait_for('reading')
+      ]);
+    assert_true(sensor_objects[sensor].hasReading);
 }
 
 // Device[Orientation|Motion]EventPump treat NaN as a missing value.
 let nullToNan = x => (x === null ? NaN : x);
 
-function setMockMotionData(sensorProvider, motionData) {
+async function setMockMotionData(sensorProvider, motionData) {
   const degToRad = Math.PI / 180;
   return Promise.all([
       setMockSensorDataForType(sensorProvider, "Accelerometer", [
