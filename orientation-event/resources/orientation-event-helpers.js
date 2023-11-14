@@ -52,6 +52,25 @@ async function set_permissions() {
   assert_equals(await DeviceMotionEvent.requestPermission(), 'granted');
 }
 
+// Adds a dummy devicemotion/deviceorientation callback for the entirety of a
+// test.
+//
+// The calls to test_driver.update_virtual_sensor() in
+// setMockSensorDataForType() only have an effect if the underlying sensors are
+// active.
+// The spec gives implementations some leeway on when to start them, so we can
+// only count on it when at least one event listener has been added, and even
+// then we need to make sure any asynchronous steps have completed, so we also
+// need to wait for a non-zero sampling frequency.
+// This function, together with setMock{Motion,Orientation}Data(), ensures both
+// conditions are true before attempting to create data to trigger the firing
+// of an event.
+function startFetchingEventData(t, name) {
+  const dummyCallback = () => {};
+  window.addEventListener(name, dummyCallback);
+  t.add_cleanup(() => { window.removeEventListener('devicemotion', dummyCallback) });
+}
+
 async function create_virtual_sensor() {
   const sensors = ["accelerometer", "linear-acceleration", "gyroscope"];
   for (const item of sensors) {
@@ -59,27 +78,9 @@ async function create_virtual_sensor() {
   }
 }
 
-var sensor_objects = {};
-function create_sensor_objects() {
-  sensor_objects.accelerometer = new Accelerometer();
-  sensor_objects.linear_acceleration = new LinearAccelerationSensor();
-  sensor_objects.gyroscope = new Gyroscope();
-}
-
-var sensor_event_watchers = {};
-function create_event_watcher(t) {
-  const event_types = ['activate', 'reading', 'error'];
-  const sensors = ["accelerometer", "linear_acceleration", "gyroscope"];
-  for (const item of sensors) {
-    sensor_event_watchers[item] = new EventWatcher(t, sensor_objects[item], event_types);
-  }
-}
-
-async function createVirtualSensors(t) {
+async function createVirtualSensors() {
   await set_permissions();
   await create_virtual_sensor();
-  create_sensor_objects();
-  create_event_watcher(t);
 }
 
 // If two doubles differ by less than this amount, we can consider them
@@ -113,58 +114,39 @@ function generateOrientationData(alpha, beta, gamma, absolute) {
   return orientationData;
 }
 
-var sensor_started = {'accelerometer': false, 'linear-acceleration': false, 'gyroscope': false};
 async function setMockSensorDataForType(sensorProvider, sensorType, mockDataArray) {
-  var type;
-  var sensor;
-  switch (sensorType) {
-    case "Accelerometer":
-      type = 'accelerometer';
-      sensor = 'accelerometer';
-      break;
-    case "LinearAccelerationSensor":
-      type = 'linear-acceleration';
-      sensor = 'linear_acceleration';
-      break;
-    case "Gyroscope":
-      type = 'gyroscope';
-      sensor = 'gyroscope';
-      break;
-    default:
-      console.log(`Illegal sensorType ${sensorType}.`);
-      return;
-    }
-
-    if(!sensor_started[type]) {
-      sensor_objects[sensor].start();
-      assert_false(sensor_objects[sensor].hasReading);
-      await sensor_event_watchers[sensor].wait_for('activate');
-      sensor_started[type] = true;
-    }
-    await Promise.all([
-        test_driver.update_virtual_sensor(type, {"x":mockDataArray[0],"y":mockDataArray[1],"z":mockDataArray[2]}),
-        sensor_event_watchers[sensor].wait_for('reading')
-      ]);
-    assert_true(sensor_objects[sensor].hasReading);
+  await Promise.all([
+    test_driver.update_virtual_sensor(sensorType, {"x":mockDataArray[0],"y":mockDataArray[1],"z":mockDataArray[2]}),
+  ]);
 }
 
 // Device[Orientation|Motion]EventPump treat NaN as a missing value.
 let nullToNan = x => (x === null ? NaN : x);
 
-async function setMockMotionData(sensorProvider, motionData) {
+async function setMockMotionData(t, sensorProvider, motionData) {
+  async function virtual_sensor_is_active(name) {
+    const info = await test_driver.get_virtual_sensor_information(name);
+    return info.requestedSamplingFrequency !== 0;
+  }
+  await Promise.all([
+    t.step_wait(async () => virtual_sensor_is_active('accelerometer')),
+    t.step_wait(async () => virtual_sensor_is_active('linear-acceleration')),
+    t.step_wait(async () => virtual_sensor_is_active('gyroscope')),
+  ]);
+
   const degToRad = Math.PI / 180;
   return Promise.all([
-      setMockSensorDataForType(sensorProvider, "Accelerometer", [
+      setMockSensorDataForType(sensorProvider, "accelerometer", [
           nullToNan(motionData.accelerationIncludingGravityX),
           nullToNan(motionData.accelerationIncludingGravityY),
           nullToNan(motionData.accelerationIncludingGravityZ),
       ]),
-      setMockSensorDataForType(sensorProvider, "LinearAccelerationSensor", [
+      setMockSensorDataForType(sensorProvider, "linear-acceleration", [
           nullToNan(motionData.accelerationX),
           nullToNan(motionData.accelerationY),
           nullToNan(motionData.accelerationZ),
       ]),
-      setMockSensorDataForType(sensorProvider, "Gyroscope", [
+      setMockSensorDataForType(sensorProvider, "gyroscope", [
           nullToNan(motionData.rotationRateAlpha) * degToRad,
           nullToNan(motionData.rotationRateBeta) * degToRad,
           nullToNan(motionData.rotationRateGamma) * degToRad,
