@@ -71,16 +71,11 @@ function startFetchingEventData(t, name) {
   t.add_cleanup(() => { window.removeEventListener('devicemotion', dummyCallback) });
 }
 
-async function create_virtual_sensor() {
+async function create_virtual_sensors() {
   const sensors = ["accelerometer", "linear-acceleration", "gyroscope"];
   for (const item of sensors) {
     await test_driver.create_virtual_sensor(item);
   }
-}
-
-async function createVirtualSensors() {
-  await set_permissions();
-  await create_virtual_sensor();
 }
 
 // If two doubles differ by less than this amount, we can consider them
@@ -114,43 +109,37 @@ function generateOrientationData(alpha, beta, gamma, absolute) {
   return orientationData;
 }
 
-async function setMockSensorDataForType(sensorProvider, sensorType, mockDataArray) {
-  await Promise.all([
-    test_driver.update_virtual_sensor(sensorType, {"x":mockDataArray[0],"y":mockDataArray[1],"z":mockDataArray[2]}),
-  ]);
-}
-
 // Device[Orientation|Motion]EventPump treat NaN as a missing value.
 let nullToNan = x => (x === null ? NaN : x);
 
-async function setMockMotionData(t, sensorProvider, motionData) {
+async function setMockMotionData(t, motionData) {
   async function virtual_sensor_is_active(name) {
     const info = await test_driver.get_virtual_sensor_information(name);
     return info.requestedSamplingFrequency !== 0;
   }
   await Promise.all([
-    t.step_wait(async () => virtual_sensor_is_active('accelerometer')),
-    t.step_wait(async () => virtual_sensor_is_active('linear-acceleration')),
-    t.step_wait(async () => virtual_sensor_is_active('gyroscope')),
+    t.step_wait(() => virtual_sensor_is_active('accelerometer')),
+    t.step_wait(() => virtual_sensor_is_active('linear-acceleration')),
+    t.step_wait(() => virtual_sensor_is_active('gyroscope')),
   ]);
 
   const degToRad = Math.PI / 180;
   return Promise.all([
-      setMockSensorDataForType(sensorProvider, "accelerometer", [
-          nullToNan(motionData.accelerationIncludingGravityX),
-          nullToNan(motionData.accelerationIncludingGravityY),
-          nullToNan(motionData.accelerationIncludingGravityZ),
-      ]),
-      setMockSensorDataForType(sensorProvider, "linear-acceleration", [
-          nullToNan(motionData.accelerationX),
-          nullToNan(motionData.accelerationY),
-          nullToNan(motionData.accelerationZ),
-      ]),
-      setMockSensorDataForType(sensorProvider, "gyroscope", [
-          nullToNan(motionData.rotationRateAlpha) * degToRad,
-          nullToNan(motionData.rotationRateBeta) * degToRad,
-          nullToNan(motionData.rotationRateGamma) * degToRad,
-      ]),
+      test_driver.update_virtual_sensor('accelerometer', {
+          "x":nullToNan(motionData.accelerationIncludingGravityX),
+          "y":nullToNan(motionData.accelerationIncludingGravityY),
+          "z":nullToNan(motionData.accelerationIncludingGravityZ),
+      }),
+      test_driver.update_virtual_sensor('linear-acceleration', {
+          "x":nullToNan(motionData.accelerationX),
+          "y":nullToNan(motionData.accelerationY),
+          "z":nullToNan(motionData.accelerationZ),
+      }),
+      test_driver.update_virtual_sensor('gyroscope', {
+          "x":nullToNan(motionData.rotationRateAlpha) * degToRad,
+          "y":nullToNan(motionData.rotationRateBeta) * degToRad,
+          "z":nullToNan(motionData.rotationRateGamma) * degToRad,
+      }),
   ]);
 }
 

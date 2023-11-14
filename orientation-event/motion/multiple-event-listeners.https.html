@@ -8,13 +8,14 @@
 'use strict';
 
 promise_test(async (t, sensorProvider) => {
-  await createVirtualSensors();
+  await set_permissions();
+  await create_virtual_sensors();
   startFetchingEventData(t, 'devicemotion');
 
   const motionData1 = generateMotionData(1, 2, 3,
                                          4, 5, 6,
                                          7, 8, 9);
-  await setMockMotionData(t, sensorProvider, motionData1);
+  await setMockMotionData(t, motionData1);
   await Promise.all([
     waitForEvent(getExpectedMotionEvent(motionData1)),
     waitForEvent(getExpectedMotionEvent(motionData1))
@@ -23,7 +24,7 @@ promise_test(async (t, sensorProvider) => {
   const motionData2 = generateMotionData(11, 12, 13,
                                          14, 15, 16,
                                          17, 18, 19);
-  await setMockMotionData(t, sensorProvider, motionData2);
+  await setMockMotionData(t, motionData2);
   await waitForEvent(getExpectedMotionEvent(motionData2));
 }, 'Tests using multiple event handlers for the Device Motion API.');
 </script>

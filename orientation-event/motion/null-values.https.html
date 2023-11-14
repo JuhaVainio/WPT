@@ -7,7 +7,11 @@
 <script>
 'use strict';
 
-sensor_test(async (t, sensorProvider) => {
+promise_test(async (t, sensorProvider) => {
+  await set_permissions();
+  await create_virtual_sensors();
+  startFetchingEventData(t, 'devicemotion');
+
   const motionData1 = generateMotionData(1, 2, 3,
                                          null, null, null,
                                          null, null, null);
@@ -24,16 +28,16 @@ sensor_test(async (t, sensorProvider) => {
                                          null, null, null,
                                          null, null, null);
 
-  setMockMotionData(sensorProvider, motionData1);
+  setMockMotionData(t, motionData1);
   await waitForEvent(getExpectedMotionEvent(motionData1));
 
-  setMockMotionData(sensorProvider, motionData2);
+  setMockMotionData(t, motionData2);
   await waitForEvent(getExpectedMotionEvent(motionData2));
 
-  setMockMotionData(sensorProvider, motionData3);
+  setMockMotionData(t, motionData3);
   await waitForEvent(getExpectedMotionEvent(motionData3));
 
-  setMockMotionData(sensorProvider, motionData4);
+  setMockMotionData(t, motionData4);
   await waitForEvent(getExpectedMotionEvent(motionData4));
 }, 'Tests using null values for some or all of the event properties.');
 </script>
