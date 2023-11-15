@@ -12,7 +12,7 @@
 
 promise_test(async (t, sensorProvider) => {
   await set_permissions();
-  await create_virtual_sensors();
+  await createVirtualDeviceMotionSensors();
   startFetchingEventData(t, 'devicemotion');
 
   const motionData = generateMotionData(0, 0, 0,

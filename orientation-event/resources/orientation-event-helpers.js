@@ -49,7 +49,10 @@ function sensor_test(func, name, properties) {
 async function set_permissions() {
   await test_driver.set_permission({name: 'accelerometer'}, 'granted');
   await test_driver.set_permission({name: 'gyroscope'}, 'granted');
-  assert_equals(await DeviceMotionEvent.requestPermission(), 'granted');
+  return test_driver.bless('enable user activation', async () => {
+    const permission = await DeviceMotionEvent.requestPermission();
+    assert_equals(permission, 'granted');
+  });
 }
 
 // Adds a dummy devicemotion/deviceorientation callback for the entirety of a
@@ -71,7 +74,7 @@ function startFetchingEventData(t, name) {
   t.add_cleanup(() => { window.removeEventListener('devicemotion', dummyCallback) });
 }
 
-async function create_virtual_sensors() {
+async function createVirtualDeviceMotionSensors() {
   const sensors = ["accelerometer", "linear-acceleration", "gyroscope"];
   for (const item of sensors) {
     await test_driver.create_virtual_sensor(item);
