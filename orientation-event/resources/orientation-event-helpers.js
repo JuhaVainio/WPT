@@ -46,7 +46,7 @@ function sensor_test(func, name, properties) {
   }, name, properties);
 }
 
-async function set_permissions() {
+async function setMotionSensorsPermissions() {
   await test_driver.set_permission({name: 'accelerometer'}, 'granted');
   await test_driver.set_permission({name: 'gyroscope'}, 'granted');
   return test_driver.bless('enable user activation', async () => {
@@ -74,10 +74,15 @@ function startFetchingEventData(t, name) {
   t.add_cleanup(() => { window.removeEventListener('devicemotion', dummyCallback) });
 }
 
-async function createVirtualDeviceMotionSensors() {
-  const sensors = ["accelerometer", "linear-acceleration", "gyroscope"];
+async function createVirtualSensors(params) {
+  for (const [sensor, connected] of params) {
+    await test_driver.create_virtual_sensor(sensor, {"connected": connected});
+  }
+}
+
+async function removeVirtualSensors(sensors) {
   for (const item of sensors) {
-    await test_driver.create_virtual_sensor(item);
+    await test_driver.remove_virtual_sensor(item);
   }
 }
 
@@ -114,36 +119,46 @@ function generateOrientationData(alpha, beta, gamma, absolute) {
 
 // Device[Orientation|Motion]EventPump treat NaN as a missing value.
 let nullToNan = x => (x === null ? NaN : x);
+let nullToZero = x => (x === null ? 0 : x);
 
-async function setMockMotionData(t, motionData) {
+async function setMockMotionData(t, motionData, isAccelerometerConnected,
+                                 isLinearAccelerometerConnected,
+                                 isGyroscopeConnected) {
   async function virtual_sensor_is_active(name) {
     const info = await test_driver.get_virtual_sensor_information(name);
     return info.requestedSamplingFrequency !== 0;
   }
-  await Promise.all([
-    t.step_wait(() => virtual_sensor_is_active('accelerometer')),
-    t.step_wait(() => virtual_sensor_is_active('linear-acceleration')),
-    t.step_wait(() => virtual_sensor_is_active('gyroscope')),
-  ]);
+
+  if (isAccelerometerConnected === true) {
+    await Promise.all([t.step_wait(() => virtual_sensor_is_active('accelerometer'))]);
+  }
+
+  if (isLinearAccelerometerConnected === true) {
+    await Promise.all([t.step_wait(() => virtual_sensor_is_active('linear-acceleration'))]);
+  }
+
+  if (isGyroscopeConnected === true) {
+    await Promise.all([t.step_wait(() => virtual_sensor_is_active('gyroscope'))]);
+  }
 
   const degToRad = Math.PI / 180;
   return Promise.all([
-      test_driver.update_virtual_sensor('accelerometer', {
-          "x":nullToNan(motionData.accelerationIncludingGravityX),
-          "y":nullToNan(motionData.accelerationIncludingGravityY),
-          "z":nullToNan(motionData.accelerationIncludingGravityZ),
-      }),
-      test_driver.update_virtual_sensor('linear-acceleration', {
-          "x":nullToNan(motionData.accelerationX),
-          "y":nullToNan(motionData.accelerationY),
-          "z":nullToNan(motionData.accelerationZ),
-      }),
-      test_driver.update_virtual_sensor('gyroscope', {
-          "x":nullToNan(motionData.rotationRateAlpha) * degToRad,
-          "y":nullToNan(motionData.rotationRateBeta) * degToRad,
-          "z":nullToNan(motionData.rotationRateGamma) * degToRad,
-      }),
-  ]);
+    test_driver.update_virtual_sensor('accelerometer', {
+        "x":nullToZero(motionData.accelerationIncludingGravityX),
+        "y":nullToZero(motionData.accelerationIncludingGravityY),
+        "z":nullToZero(motionData.accelerationIncludingGravityZ),
+    }),
+    test_driver.update_virtual_sensor('linear-acceleration', {
+        "x":nullToZero(motionData.accelerationX),
+        "y":nullToZero(motionData.accelerationY),
+        "z":nullToZero(motionData.accelerationZ),
+    }),
+    test_driver.update_virtual_sensor('gyroscope', {
+        "x":nullToZero(motionData.rotationRateAlpha) * degToRad,
+        "y":nullToZero(motionData.rotationRateBeta) * degToRad,
+        "z":nullToZero(motionData.rotationRateGamma) * degToRad,
+    }),
+]);
 }
 
 function setMockOrientationData(sensorProvider, orientationData) {
@@ -157,12 +172,16 @@ function setMockOrientationData(sensorProvider, orientationData) {
 }
 
 function assertEventEquals(actualEvent, expectedEvent) {
+  console.log('JV666 assertEventEquals ' + JSON.stringify(actualEvent), JSON.stringify(expectedEvent));
   for (let key1 of Object.keys(Object.getPrototypeOf(expectedEvent))) {
     if (typeof expectedEvent[key1] === "object" && expectedEvent[key1] !== null) {
+      console.log('JV666 assertEventEquals 1 ' + actualEvent[key1], expectedEvent[key1]);
       assertEventEquals(actualEvent[key1], expectedEvent[key1]);
     } else if (typeof expectedEvent[key1] === "number") {
+      console.log('JV666 assertEventEquals 2 ' + JSON.stringify(actualEvent[key1]), JSON.stringify(expectedEvent[key1]));
       assert_approx_equals(actualEvent[key1], expectedEvent[key1], EPSILON, key1);
     } else {
+      console.log('JV666 assertEventEquals 3 ' + JSON.stringify(actualEvent[key1]), JSON.stringify(expectedEvent[key1]));
       assert_equals(actualEvent[key1], expectedEvent[key1], key1);
     }
   }
