@@ -68,8 +68,10 @@ async function setMotionSensorsPermissions() {
 // This function, together with setMock{Motion,Orientation}Data(), ensures both
 // conditions are true before attempting to create data to trigger the firing
 // of an event.
+
+const dummyCallback = () => {};
+
 function startFetchingEventData(t, name) {
-  const dummyCallback = () => {};
   window.addEventListener(name, dummyCallback);
   t.add_cleanup(() => { window.removeEventListener('devicemotion', dummyCallback) });
 }
@@ -158,7 +160,7 @@ async function setMockMotionData(t, motionData, isAccelerometerConnected,
         "y":nullToZero(motionData.rotationRateBeta) * degToRad,
         "z":nullToZero(motionData.rotationRateGamma) * degToRad,
     }),
-]);
+  ]);
 }
 
 function setMockOrientationData(sensorProvider, orientationData) {

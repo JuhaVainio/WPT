@@ -30,25 +30,40 @@ promise_test(async (t, sensorProvider) => {
                                          null, null, null,
                                          null, null, null);
 
-  startFetchingEventData(t, 'devicemotion');
-
   await createVirtualSensors([['accelerometer', false],['linear-acceleration', true],['gyroscope', false]]);
-  setMockMotionData(t, motionData1, false, true, false);
+  t.add_cleanup(async () => {
+    window.removeEventListener('devicemotion', dummyCallback);
+    await removeVirtualSensors(['accelerometer', 'linear-acceleration', 'gyroscope']);
+  });
+  startFetchingEventData(t, 'devicemotion');
+  await setMockMotionData(t, motionData1, false, true, false);
   await waitForEvent(getExpectedMotionEvent(motionData1));
 
-  await removeVirtualSensors(['accelerometer', 'linear-acceleration', 'gyroscope']);
+
   await createVirtualSensors([['accelerometer', true],['linear-acceleration', false],['gyroscope', false]]);
-  setMockMotionData(t, motionData2, true, false, false);
+  t.add_cleanup(async () => {
+    window.removeEventListener('devicemotion', dummyCallback);
+    await removeVirtualSensors(['accelerometer', 'linear-acceleration', 'gyroscope']);
+  });
+  await setMockMotionData(t, motionData2, true, false, false);
   await waitForEvent(getExpectedMotionEvent(motionData2));
 
-  await removeVirtualSensors(['accelerometer', 'linear-acceleration', 'gyroscope']);
+
   await createVirtualSensors([['accelerometer', false],['linear-acceleration', false],['gyroscope', true]]);
-  setMockMotionData(t, motionData3, false, false, true);
+  t.add_cleanup(async () => {
+    window.removeEventListener('devicemotion', dummyCallback);
+    await removeVirtualSensors(['accelerometer', 'linear-acceleration', 'gyroscope']);
+  });
+  await setMockMotionData(t, motionData3, false, false, true);
   await waitForEvent(getExpectedMotionEvent(motionData3));
 
-  await removeVirtualSensors(['accelerometer', 'linear-acceleration', 'gyroscope']);
+
   await createVirtualSensors([['accelerometer', false],['linear-acceleration', false],['gyroscope', false]]);
-  setMockMotionData(t, motionData4, false, false, false);
+  t.add_cleanup(async () => {
+    window.removeEventListener('devicemotion', dummyCallback);
+    await removeVirtualSensors(['accelerometer', 'linear-acceleration', 'gyroscope']);
+  });
+  await setMockMotionData(t, motionData4, false, false, false);
   await waitForEvent(getExpectedMotionEvent(motionData4));
 }, 'Tests using null values for some or all of the event properties.');
 </script>
