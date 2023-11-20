@@ -11,15 +11,18 @@
 'use strict';
 
 promise_test(async (t, sensorProvider) => {
-  await set_permissions();
-  await createVirtualDeviceMotionSensors();
+  await setMotionSensorsPermissions();
+  await createVirtualSensors([['accelerometer', true],['linear-acceleration', true],['gyroscope', true]]);
+  t.add_cleanup(async () => {
+    await removeVirtualSensors(['accelerometer', 'linear-acceleration', 'gyroscope']);
+  });
   startFetchingEventData(t, 'devicemotion');
 
   const motionData = generateMotionData(0, 0, 0,
                                         0, 0, 0,
                                         0, 0, 0);
 
-  setMockMotionData(t, motionData);
+  await setMockMotionData(t, motionData, true, true, true);
   const event = getExpectedMotionEvent(motionData);
   await waitForEvent(event);
 
