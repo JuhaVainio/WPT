@@ -174,16 +174,12 @@ function setMockOrientationData(sensorProvider, orientationData) {
 }
 
 function assertEventEquals(actualEvent, expectedEvent) {
-  console.log('JV666 assertEventEquals ' + JSON.stringify(actualEvent), JSON.stringify(expectedEvent));
   for (let key1 of Object.keys(Object.getPrototypeOf(expectedEvent))) {
     if (typeof expectedEvent[key1] === "object" && expectedEvent[key1] !== null) {
-      console.log('JV666 assertEventEquals 1 ' + actualEvent[key1], expectedEvent[key1]);
       assertEventEquals(actualEvent[key1], expectedEvent[key1]);
     } else if (typeof expectedEvent[key1] === "number") {
-      console.log('JV666 assertEventEquals 2 ' + JSON.stringify(actualEvent[key1]), JSON.stringify(expectedEvent[key1]));
       assert_approx_equals(actualEvent[key1], expectedEvent[key1], EPSILON, key1);
     } else {
-      console.log('JV666 assertEventEquals 3 ' + JSON.stringify(actualEvent[key1]), JSON.stringify(expectedEvent[key1]));
       assert_equals(actualEvent[key1], expectedEvent[key1], key1);
     }
   }
