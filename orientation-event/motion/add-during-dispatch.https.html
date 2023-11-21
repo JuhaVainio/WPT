@@ -29,8 +29,8 @@ promise_test(async (t, sensorProvider) => {
         // Not call until the outer function returns.
         assertEventEquals(event2, getExpectedMotionEvent(motionData));
         result();
-      });
-    });
+      }, { once: true });
+    }, { once: true });
     result = resolve;
   });
 }, 'Test no fire listeners added during event dispatch.');
