@@ -18,12 +18,16 @@ promise_test(async (t, sensorProvider) => {
   });
   startFetchingEventData(t, 'devicemotion');
 
-  const motionData = generateMotionData(0, 0, 0,
-                                        0, 0, 0,
-                                        0, 0, 0);
+  const motionData1 = generateMotionData(1, 2, 3,
+                                         4, 5, 6,
+                                         7, 8, 9);
 
-  await setMockMotionData(t, motionData, true, true, true);
-  const event = getExpectedMotionEvent(motionData);
+  const motionData2 = generateMotionData(11, 12, 13,
+                                         14, 15, 16,
+                                         17, 18, 19);
+
+  await setMockMotionData(t, motionData1, true, true, true);
+  const event = getExpectedMotionEvent(motionData1);
   await waitForEvent(event);
 
   const {minimize, restore} = window_state_context(t);
@@ -48,7 +52,12 @@ promise_test(async (t, sensorProvider) => {
   await new Promise(resolve => { t.step_timeout(resolve, 100); });
   await restore();
   assert_false(document.hidden);
-  return Promise.all([hiddenEventPromise, waitForEvent(event)]);
+
+  // Restart suspended sensors caused by minimizing browser window.
+  await setMockMotionData(t, motionData2, true, true, true);
+  const event2 = getExpectedMotionEvent(motionData2);
+
+  return Promise.all([hiddenEventPromise, waitForEvent(event2)]);
 }, 'Tests to check that devicemotion events are not fired when the page is not visible.');
 </script>
 </body>
