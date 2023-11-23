@@ -73,7 +73,7 @@ const dummyCallback = () => {};
 
 function startFetchingEventData(t, name) {
   window.addEventListener(name, dummyCallback);
-  t.add_cleanup(() => { window.removeEventListener('devicemotion', dummyCallback) });
+  t.add_cleanup(() => { window.removeEventListener(name, dummyCallback) });
 }
 
 async function createVirtualSensors(params) {
