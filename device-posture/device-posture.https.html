@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+//<script src="../resources/orientation-event-helpers.js"></script>
+<script>
+'use strict';
+
+async function cleanup() {
+  await test_driver.set_device_posture('continuous');
+}
+
+promise_test(async (t) => {
+  t.add_cleanup(cleanup);
+  const promise = new Promise(resolve => {
+    navigator.devicePosture.addEventListener("change", () => {
+      resolve();
+    });
+  });
+
+  const postures = ['folded', 'continuous', 'folded'];
+  for (let posture of postures) {
+    await test_driver.set_device_posture(posture);
+    await promise;
+    assert_equals(posture, navigator.devicePosture.type);
+  }
+}, 'Device posture test.');
+
+
+
+
+
+// REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-change-event.js
+promise_test(async (t) => {
+  t.add_cleanup(cleanup);
+  assert_equals(navigator.devicePosture.type, 'continuous');
+
+  const promise = new Promise(resolve => {
+    navigator.devicePosture.onchange = function() {
+        resolve(navigator.devicePosture.type);
+      }
+  });
+  test_driver.set_device_posture('folded');
+  assert_equals(await promise, 'folded')
+}, 'Device posture test: device-posture-change-event.js.');
+
+// REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-default.js
+promise_test(async (t) => {
+  t.add_cleanup(cleanup);
+  assert_equals(navigator.devicePosture.type, 'continuous');
+  await test_driver.set_device_posture('folded');
+  assert_equals(navigator.devicePosture.type, 'folded')
+}, 'Device posture test: device-posture-default.js.');
+
+// REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-event-listener.js
+promise_test(async (t) => {
+  t.add_cleanup(cleanup);
+  assert_equals(navigator.devicePosture.type, 'continuous');
+
+  const promise = new Promise(resolve => {
+    navigator.devicePosture.addEventListener(
+      'change',
+      () => { resolve(navigator.devicePosture.type); },
+      { once: true }
+    );
+  });
+  test_driver.set_device_posture('folded');
+  assert_equals(await promise, 'folded')
+}, 'Device posture test: device-posture-event-listener.js.');
+
+// REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-media-queries.js
+promise_test(async (t) => {
+  t.add_cleanup(cleanup);
+  assert_equals(navigator.devicePosture.type, 'continuous');
+  assert_true(matchMedia('(device-posture: continuous)').matches);
+
+  const foldedMQL = window.matchMedia('(device-posture: folded)');
+  const promise = new Promise(resolve => {
+    foldedMQL.addEventListener(
+      'change',
+      () => { resolve(foldedMQL.matches); },
+      { once: true }
+    );
+  });
+  test_driver.set_device_posture('folded');
+  assert_true(await promise)
+}, 'Device posture test: device-posture-media-queries.js.');
+</script>

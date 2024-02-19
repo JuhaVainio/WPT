@@ -1023,7 +1023,15 @@
          */
         get_virtual_sensor_information: function(sensor_type, context=null) {
             return window.test_driver_internal.get_virtual_sensor_information(sensor_type, context);
-        }
+        },
+
+        /**
+         * Sets the device posture.
+         */
+        set_device_posture: function(posture, context=null) {
+            console.log('JV666 TEST_DRIVER testdriver.js set_device_posture: ' + posture);
+            return window.test_driver_internal.set_device_posture(posture, context);
+        },
     };
 
     window.test_driver_internal = {
@@ -1203,6 +1211,10 @@
 
         async get_virtual_sensor_information(sensor_type, context=null) {
             throw new Error("get_virtual_sensor_information() is not implemented by testdriver-vendor.js");
-        }
+        },
+
+        async set_device_posture(posture, context=null) {
+            throw new Error("set_device_posture() is not implemented by testdriver-vendor.js");
+        },
     };
 })();

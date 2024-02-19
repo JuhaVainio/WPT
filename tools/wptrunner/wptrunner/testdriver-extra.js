@@ -327,4 +327,9 @@
     window.test_driver_internal.get_virtual_sensor_information = function(sensor_type, context=null) {
         return create_action("get_virtual_sensor_information", {sensor_type, context});
     };
+
+    window.test_driver_internal.set_device_posture = function(posture, context=null) {
+      console.log('JV666 TEST_DRIVER tools/wptrunner/wptrunner/testdriver-extra.js set_device_posture: ' + posture);
+      return create_action("set_device_posture", {posture, context});
+    };
 })();

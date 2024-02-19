@@ -35,6 +35,7 @@ from .protocol import (BaseProtocolPart,
                        RPHRegistrationsProtocolPart,
                        FedCMProtocolPart,
                        VirtualSensorProtocolPart,
+                       DevicePostureProtocolPart,
                        merge_dicts)
 
 from webdriver.client import Session
@@ -431,6 +432,14 @@ class WebDriverVirtualSensorPart(VirtualSensorProtocolPart):
     def get_virtual_sensor_information(self, sensor_type):
         return self.webdriver.send_session_command("GET", "sensor/%s" % sensor_type)
 
+class WebDriverDevicePosturePart(DevicePostureProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def set_device_posture(self, posture):
+        body = {"posture": posture}
+        self.logger.debug("JV666 tools/wptrunner/wptrunner/executors/executorwebdriver.py set_device_posture: %s" % posture)
+        return self.webdriver.send_session_command("POST", "window/deviceposture", body)
 
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
@@ -450,7 +459,8 @@ class WebDriverProtocol(Protocol):
                   WebDriverRPHRegistrationsProtocolPart,
                   WebDriverFedCMProtocolPart,
                   WebDriverDebugProtocolPart,
-                  WebDriverVirtualSensorPart]
+                  WebDriverVirtualSensorPart,
+                  WebDriverDevicePosturePart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)

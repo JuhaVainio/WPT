@@ -443,6 +443,17 @@ class GetVirtualSensorInformationAction:
         self.logger.debug("Requesting information from %s sensor" % sensor_type)
         return self.protocol.virtual_sensor.get_virtual_sensor_information(sensor_type)
 
+class SetDevicePostureAction:
+    name = "set_device_posture"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        posture = payload["posture"]
+        self.logger.debug("JV666 tools/wptrunner/wptrunner/executors/actions.py set_device_posture: %s" % posture)
+        return self.protocol.device_posture.set_device_posture(posture)
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
@@ -477,4 +488,5 @@ actions = [ClickAction,
            CreateVirtualSensorAction,
            UpdateVirtualSensorAction,
            RemoveVirtualSensorAction,
-           GetVirtualSensorInformationAction]
+           GetVirtualSensorInformationAction,
+           SetDevicePostureAction]
