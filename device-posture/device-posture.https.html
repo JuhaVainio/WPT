@@ -21,7 +21,7 @@ promise_test(async (t) => {
   });
 
   const postures = ['folded', 'continuous', 'folded'];
-  for (let posture of postures) {
+  for (const posture of postures) {
     await test_driver.set_device_posture(posture);
     await promise;
     assert_equals(posture, navigator.devicePosture.type);
