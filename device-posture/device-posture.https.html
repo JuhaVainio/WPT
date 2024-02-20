@@ -14,17 +14,13 @@ async function cleanup() {
 
 promise_test(async (t) => {
   t.add_cleanup(cleanup);
-  const promise = new Promise(resolve => {
-    navigator.devicePosture.addEventListener("change", () => {
-      resolve();
-    });
-  });
-
+  const watcher = new EventWatcher(t, navigator.devicePosture, ['change']);
   const postures = ['folded', 'continuous', 'folded'];
   for (const posture of postures) {
-    await test_driver.set_device_posture(posture);
-    await promise;
-    assert_equals(posture, navigator.devicePosture.type);
+    test_driver.set_device_posture(posture);
+    await watcher.wait_for('change').then(() => {
+      assert_equals(posture, navigator.devicePosture.type);
+    });
   }
 }, 'Device posture test.');
 
