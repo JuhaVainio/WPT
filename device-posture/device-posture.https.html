@@ -7,8 +7,9 @@
 <script>
 'use strict';
 
+const originalPosture = navigator.devicePosture.type;
 async function cleanup() {
-  await test_driver.set_device_posture('continuous');
+  await test_driver.set_device_posture(originalPosture);
 }
 
 promise_test(async (t) => {
