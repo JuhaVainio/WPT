@@ -1031,7 +1031,7 @@
         set_device_posture: function(posture, context=null) {
             console.log('JV666 TEST_DRIVER testdriver.js set_device_posture: ' + posture);
             return window.test_driver_internal.set_device_posture(posture, context);
-        },
+        }
     };
 
     window.test_driver_internal = {
