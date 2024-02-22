@@ -6,13 +6,18 @@
 <script>
 'use strict';
 
-const originalPosture = navigator.devicePosture.type;
-async function cleanup() {
-  await test_driver.set_device_posture(originalPosture);
+function device_posture_test(func, name, properties) {
+  promise_test(async t => {
+    const originalPosture = navigator.devicePosture.type;
+    t.add_cleanup(async () => {
+      await test_driver.set_device_posture(originalPosture);
+    });
+
+    return func(t);
+  }, name, properties);
 }
 
-promise_test(async (t) => {
-  t.add_cleanup(cleanup);
+device_posture_test(async (t) => {
   const watcher = new EventWatcher(t, navigator.devicePosture, ['change']);
   const postures = ['folded', 'continuous', 'folded'];
   for (const posture of postures) {
@@ -28,8 +33,7 @@ promise_test(async (t) => {
 
 
 // REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-change-event.js
-promise_test(async (t) => {
-  t.add_cleanup(cleanup);
+device_posture_test(async (t) => {
   assert_equals(navigator.devicePosture.type, 'continuous');
 
   const promise = new Promise(resolve => {
@@ -42,16 +46,14 @@ promise_test(async (t) => {
 }, 'Device posture test: device-posture-change-event.js.');
 
 // REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-default.js
-promise_test(async (t) => {
-  t.add_cleanup(cleanup);
+device_posture_test(async (t) => {
   assert_equals(navigator.devicePosture.type, 'continuous');
   await test_driver.set_device_posture('folded');
   assert_equals(navigator.devicePosture.type, 'folded')
 }, 'Device posture test: device-posture-default.js.');
 
 // REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-event-listener.js
-promise_test(async (t) => {
-  t.add_cleanup(cleanup);
+device_posture_test(async (t) => {
   assert_equals(navigator.devicePosture.type, 'continuous');
 
   const promise = new Promise(resolve => {
@@ -66,8 +68,7 @@ promise_test(async (t) => {
 }, 'Device posture test: device-posture-event-listener.js.');
 
 // REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-media-queries.js
-promise_test(async (t) => {
-  t.add_cleanup(cleanup);
+device_posture_test(async (t) => {
   assert_equals(navigator.devicePosture.type, 'continuous');
   assert_true(matchMedia('(device-posture: continuous)').matches);
 
