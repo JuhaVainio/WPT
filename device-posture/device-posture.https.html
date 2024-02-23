@@ -47,7 +47,7 @@ device_posture_test(async (t) => {
       { once: true }
     );
   });
-  test_driver.set_device_posture('folded');
+  await test_driver.set_device_posture('folded');
   assert_equals(await promise, 'folded')
 }, 'Device posture test: device-posture-event-listener.js.');
 
@@ -64,7 +64,7 @@ device_posture_test(async (t) => {
       { once: true }
     );
   });
-  test_driver.set_device_posture('folded');
+  await test_driver.set_device_posture('folded');
   assert_true(await promise)
 }, 'Device posture test: device-posture-media-queries.js.');
 </script>
