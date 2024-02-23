@@ -19,13 +19,12 @@ function device_posture_test(func, name, properties) {
 
 // REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-change-event.js
 device_posture_test(async (t) => {
-  const watcher = new EventWatcher(t, navigator.devicePosture, ['change']);
+  const watcher = new EventWatcher(t, navigator.devicePosture, ['onchange']);
   const postures = ['folded', 'continuous', 'folded'];
   for (const posture of postures) {
     await test_driver.set_device_posture(posture);
-    await watcher.wait_for('change').then(() => {
-      assert_equals(posture, navigator.devicePosture.type);
-    });
+    await watcher;
+    assert_equals(posture, navigator.devicePosture.type);
   }
 }, 'Device posture test: device-posture-change-event.js.');
 
