@@ -22,7 +22,7 @@ device_posture_test(async (t) => {
   const watcher = new EventWatcher(t, navigator.devicePosture, ['change']);
   const postures = ['folded', 'continuous', 'folded'];
   for (const posture of postures) {
-    test_driver.set_device_posture(posture);
+    await test_driver.set_device_posture(posture);
     await watcher.wait_for('change').then(() => {
       assert_equals(posture, navigator.devicePosture.type);
     });
