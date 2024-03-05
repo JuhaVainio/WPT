@@ -36,6 +36,7 @@ from .protocol import (BaseProtocolPart,
                        FedCMProtocolPart,
                        VirtualSensorProtocolPart,
                        DevicePostureProtocolPart,
+                       ViewportProtocolPart,
                        merge_dicts)
 
 from webdriver.client import Session
@@ -441,6 +442,15 @@ class WebDriverDevicePosturePart(DevicePostureProtocolPart):
         self.logger.debug("JV666 tools/wptrunner/wptrunner/executors/executorwebdriver.py set_device_posture: %s" % posture)
         return self.webdriver.send_session_command("POST", "deviceposture", body)
 
+class WebDriverViewportPart(ViewportProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def set_viewport_orientation(self, orientation):
+        body = {"orientation": orientation}
+        self.logger.debug("JV666 tools/wptrunner/wptrunner/executors/executorwebdriver.py set_viewport_orientation: %s" % orientation)
+        return self.webdriver.send_session_command("POST", "viewportsegments", body)
+
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
                   WebDriverTestharnessProtocolPart,
@@ -460,7 +470,8 @@ class WebDriverProtocol(Protocol):
                   WebDriverFedCMProtocolPart,
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
-                  WebDriverDevicePosturePart]
+                  WebDriverDevicePosturePart,
+                  WebDriverViewportPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)

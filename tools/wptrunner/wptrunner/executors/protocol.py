@@ -812,3 +812,13 @@ class DevicePostureProtocolPart(ProtocolPart):
     @abstractmethod
     def set_device_posture(self, posture):
         pass
+
+class ViewportProtocolPart(ProtocolPart):
+    """Protocol part for Viewport"""
+    __metaclass__ = ABCMeta
+
+    name = "viewport"
+
+    @abstractmethod
+    def set_viewport_orientation(self, orientation):
+        pass
