@@ -1036,9 +1036,9 @@
         /**
          * Sets the viewport orientation.
          */
-        async set_viewport_orientation(orientation, context=null) {
-            console.log('JV666 TEST_DRIVER testdriver.js set_viewport_orientation: ' + orientation);
-            return window.test_driver_internal.set_viewport_orientation(orientation, context);
+        async set_display_feature(orientation, offset, mask_length, context=null) {
+            console.log('JV666 TEST_DRIVER testdriver.js set_display_feature: ' + orientation + ' ' + offset + ' ' + mask_length);
+            return window.test_driver_internal.set_display_feature(orientation, offset, mask_length, context);
         }
     };
 
@@ -1225,8 +1225,8 @@
             throw new Error("set_device_posture() is not implemented by testdriver-vendor.js");
         },
 
-        async set_viewport_orientation(orientation, context=null) {
-          throw new Error("set_viewport_orientation() is not implemented by testdriver-vendor.js");
+        async set_display_feature(orientation, offset, mask_length, context=null) {
+          throw new Error("set_display_feature() is not implemented by testdriver-vendor.js");
         }
     };
 })();

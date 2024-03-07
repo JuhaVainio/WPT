@@ -455,8 +455,8 @@ class SetDevicePostureAction:
         self.logger.debug("JV666 tools/wptrunner/wptrunner/executors/actions.py set_device_posture: %s" % posture)
         return self.protocol.device_posture.set_device_posture(posture)
 
-class SetViewportOrientation:
-    name = "set_viewport_orientation"
+class SetDisplayFeature:
+    name = "set_display_feature"
 
     def __init__(self, logger, protocol):
         self.logger = logger
@@ -464,8 +464,10 @@ class SetViewportOrientation:
 
     def __call__(self, payload):
         orientation = payload["orientation"]
-        self.logger.debug("JV666 tools/wptrunner/wptrunner/executors/actions.py set_viewport_orientation: %s" % orientation)
-        return self.protocol.viewport.set_viewport_orientation(orientation)
+        offset = payload["offset"]
+        mask_length = payload["mask_length"]
+        self.logger.debug("JV666 tools/wptrunner/wptrunner/executors/actions.py set_display_feature: %s" % orientation)
+        return self.protocol.display_feature.set_display_feature(orientation, offset, mask_length)
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
@@ -502,4 +504,4 @@ actions = [ClickAction,
            RemoveVirtualSensorAction,
            GetVirtualSensorInformationAction,
            SetDevicePostureAction,
-           SetViewportOrientation]
+           SetDisplayFeature]

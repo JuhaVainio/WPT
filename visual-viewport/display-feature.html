@@ -14,7 +14,7 @@ promise_test(async t => {
   assert_equals(visualViewport.segments, null, "For a viewport not segmented, no segments must be exposed.");
 
   // HORIZONTAL
-  await test_driver.set_viewport_orientation('horizontal');
+  await test_driver.set_display_feature('horizontal', 380, 30);
   assert_equals(window.visualViewport.segments.length, 2);
   assert_true(matchMedia('(horizontal-viewport-segments: 1)').matches);
   assert_true(matchMedia('(vertical-viewport-segments: 2)').matches);
@@ -30,10 +30,12 @@ promise_test(async t => {
       { once: true }
     );
   });
-  await test_driver.set_viewport_orientation('vertical');
+  await test_driver.set_display_feature('vertical', 390, 20);
   assert_true(await promise)
   assert_true(matchMedia('(horizontal-viewport-segments: 2)').matches);
   assert_true(matchMedia('(vertical-viewport-segments: 1)').matches);
+  assert_not_equals(visualViewport.segments, null, "For a viewport segmented, segments must be exposed.");
+  console.log('JV666 visualViewport.segments: ' + JSON.stringify(visualViewport.segments, null, 2));
 }, 'Viewport segments');
 </script>
 

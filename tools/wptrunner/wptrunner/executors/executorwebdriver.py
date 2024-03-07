@@ -36,7 +36,7 @@ from .protocol import (BaseProtocolPart,
                        FedCMProtocolPart,
                        VirtualSensorProtocolPart,
                        DevicePostureProtocolPart,
-                       ViewportProtocolPart,
+                       DisplayFeatureProtocolPart,
                        merge_dicts)
 
 from webdriver.client import Session
@@ -442,14 +442,16 @@ class WebDriverDevicePosturePart(DevicePostureProtocolPart):
         self.logger.debug("JV666 tools/wptrunner/wptrunner/executors/executorwebdriver.py set_device_posture: %s" % posture)
         return self.webdriver.send_session_command("POST", "deviceposture", body)
 
-class WebDriverViewportPart(ViewportProtocolPart):
+class WebDriverDisplayFeaturePart(DisplayFeatureProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    def set_viewport_orientation(self, orientation):
+    def set_display_feature(self, orientation, offset, mask_length):
         body = {"orientation": orientation}
-        self.logger.debug("JV666 tools/wptrunner/wptrunner/executors/executorwebdriver.py set_viewport_orientation: %s" % orientation)
-        return self.webdriver.send_session_command("POST", "viewportsegments", body)
+        body.update({"offset": offset})
+        body.update({"maskLength": mask_length})
+        self.logger.debug("JV666 tools/wptrunner/wptrunner/executors/executorwebdriver.py set_display_feature: %s" % orientation)
+        return self.webdriver.send_session_command("POST", "displayfeature", body)
 
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
@@ -471,7 +473,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
                   WebDriverDevicePosturePart,
-                  WebDriverViewportPart]
+                  WebDriverDisplayFeaturePart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
