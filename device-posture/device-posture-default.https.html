@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+'use strict';
+
+// REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-default.js
+promise_test(async (t) => {
+  assert_equals(navigator.devicePosture.type, 'continuous');
+  await test_driver.set_device_posture('folded');
+  assert_equals(navigator.devicePosture.type, 'folded')
+}, 'Device posture test: device-posture-default.js.');
+</script>

@@ -438,7 +438,6 @@ class WebDriverDevicePosturePart(DevicePostureProtocolPart):
 
     def set_device_posture(self, posture):
         body = {"posture": posture}
-        self.logger.debug("JV666 tools/wptrunner/wptrunner/executors/executorwebdriver.py set_device_posture: %s" % posture)
         return self.webdriver.send_session_command("POST", "deviceposture", body)
 
 class WebDriverProtocol(Protocol):

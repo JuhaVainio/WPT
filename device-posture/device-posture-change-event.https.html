@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+'use strict';
+
+// REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-change-event.js
+promise_test(async (t) => {
+  const watcher = new EventWatcher(t, navigator.devicePosture, ['onchange']);
+  const postures = ['continuous', 'folded', 'continuous', 'folded'];
+  for (const posture of postures) {
+    await test_driver.set_device_posture(posture);
+    await watcher;
+    assert_equals(posture, navigator.devicePosture.type);
+  }
+}, 'Device posture test: device-posture-change-event.js.');
+</script>
