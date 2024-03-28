@@ -812,13 +812,3 @@ class DevicePostureProtocolPart(ProtocolPart):
     @abstractmethod
     def set_device_posture(self, posture):
         pass
-
-class DisplayFeatureProtocolPart(ProtocolPart):
-    """Protocol part for Display Feature"""
-    __metaclass__ = ABCMeta
-
-    name = "display_feature"
-
-    @abstractmethod
-    def set_display_feature(self, orientation, offset, mask_length):
-        pass

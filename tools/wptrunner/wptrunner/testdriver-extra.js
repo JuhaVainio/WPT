@@ -332,9 +332,4 @@
       console.log('JV666 TEST_DRIVER tools/wptrunner/wptrunner/testdriver-extra.js set_device_posture: ' + posture);
       return create_action("set_device_posture", {posture, context});
     };
-
-    window.test_driver_internal.set_display_feature = function(orientation, offset, mask_length, context=null) {
-      console.log('JV666 TEST_DRIVER tools/wptrunner/wptrunner/testdriver-extra.js set_display_feature: ' + orientation + ' ' + offset + ' ' + mask_length);
-      return create_action("set_display_feature", {orientation, offset, mask_length, context});
-    };
 })();
