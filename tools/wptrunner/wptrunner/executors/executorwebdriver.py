@@ -432,7 +432,7 @@ class WebDriverVirtualSensorPart(VirtualSensorProtocolPart):
     def get_virtual_sensor_information(self, sensor_type):
         return self.webdriver.send_session_command("GET", "sensor/%s" % sensor_type)
 
-class WebDriverDevicePosturePart(DevicePostureProtocolPart):
+class WebDriverDevicePostureProtocolPart(DevicePostureProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
@@ -462,7 +462,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverFedCMProtocolPart,
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
-                  WebDriverDevicePosturePart]
+                  WebDriverDevicePostureProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
