@@ -440,6 +440,9 @@ class WebDriverDevicePosturePart(DevicePostureProtocolPart):
         body = {"posture": posture}
         return self.webdriver.send_session_command("POST", "deviceposture", body)
 
+    def clear_device_posture(self):
+        return self.webdriver.send_session_command("DELETE", "deviceposture")
+
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
                   WebDriverTestharnessProtocolPart,

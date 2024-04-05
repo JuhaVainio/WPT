@@ -812,3 +812,7 @@ class DevicePostureProtocolPart(ProtocolPart):
     @abstractmethod
     def set_device_posture(self, posture):
         pass
+
+    @abstractmethod
+    def clear_device_posture(self):
+        pass

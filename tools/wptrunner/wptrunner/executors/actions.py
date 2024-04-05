@@ -454,6 +454,16 @@ class SetDevicePostureAction:
         posture = payload["posture"]
         return self.protocol.device_posture.set_device_posture(posture)
 
+class ClearDevicePostureAction:
+    name = "clear_device_posture"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.device_posture.clear_device_posture()
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -488,4 +498,5 @@ actions = [ClickAction,
            UpdateVirtualSensorAction,
            RemoveVirtualSensorAction,
            GetVirtualSensorInformationAction,
-           SetDevicePostureAction]
+           SetDevicePostureAction,
+           ClearDevicePostureAction]

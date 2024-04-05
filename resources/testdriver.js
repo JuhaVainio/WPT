@@ -1031,6 +1031,13 @@
         set_device_posture: function(posture, context=null) {
             return window.test_driver_internal.set_device_posture(posture, context);
         },
+
+        /**
+         * Clears the device posture.
+         */
+        clear_device_posture: function(context=null) {
+            return window.test_driver_internal.clear_device_posture(context);
+        },
     };
 
     window.test_driver_internal = {
@@ -1214,6 +1221,10 @@
 
         async set_device_posture(posture, context=null) {
             throw new Error("set_device_posture() is not implemented by testdriver-vendor.js");
+        },
+
+        async clear_device_posture(context=null) {
+            throw new Error("clear_device_posture() is not implemented by testdriver-vendor.js");
         }
     };
 })();
