@@ -10,10 +10,18 @@ promise_test(async (t) => {
   const originalPosture = navigator.devicePosture.type;
   const posture = originalPosture ? 'folded' : 'continuous';
 
-  await test_driver.set_device_posture(posture);
+  const watcher = new EventWatcher(t, navigator.devicePosture, ['change']);
+  await Promise.all([
+    watcher.wait_for('change'),
+    test_driver.set_device_posture(posture)
+  ]);
   assert_equals(navigator.devicePosture.type, posture);
 
-  await test_driver.clear_device_posture();
+  await Promise.all([
+    watcher.wait_for('change'),
+    test_driver.clear_device_posture()
+  ]);
   assert_equals(navigator.devicePosture.type, originalPosture);
 }, 'Tests that device posture override can be removed.');
+
 </script>
