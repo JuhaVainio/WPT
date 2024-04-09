@@ -6,7 +6,6 @@
 <script>
 'use strict';
 
-// REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-media-queries.js
 promise_test(async (t) => {
   assert_equals(navigator.devicePosture.type, 'continuous');
   assert_true(matchMedia('(device-posture: continuous)').matches);
@@ -21,5 +20,5 @@ promise_test(async (t) => {
   });
   await test_driver.set_device_posture('folded');
   assert_true(await promise)
-}, 'Device posture test: device-posture-media-queries.js.');
+}, 'Tests the Device Posture API Media Query change event handler.');
 </script>

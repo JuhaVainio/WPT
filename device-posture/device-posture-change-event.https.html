@@ -6,7 +6,6 @@
 <script>
 'use strict';
 
-// REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-change-event.js
 promise_test(async (t) => {
   const watcher = new EventWatcher(t, navigator.devicePosture, ['change']);
   const postures = ['folded', 'continuous', 'folded'];
@@ -17,5 +16,5 @@ promise_test(async (t) => {
     ]);
     assert_equals(posture, navigator.devicePosture.type);
   }
-}, 'Device posture test: device-posture-change-event.js.');
+}, 'Tests the Device Posture API change event handler.');
 </script>

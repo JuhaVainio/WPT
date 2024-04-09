@@ -6,10 +6,9 @@
 <script>
 'use strict';
 
-// REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-default.js
 promise_test(async (t) => {
   assert_equals(navigator.devicePosture.type, 'continuous');
   await test_driver.set_device_posture('folded');
   assert_equals(navigator.devicePosture.type, 'folded')
-}, 'Device posture test: device-posture-default.js.');
+}, 'Tests the Device Posture API default javascript API.');
 </script>
