@@ -8,11 +8,13 @@
 
 // REFERENCE https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/inspector-protocol/device-posture/device-posture-change-event.js
 promise_test(async (t) => {
-  const watcher = new EventWatcher(t, navigator.devicePosture, ['onchange']);
-  const postures = ['continuous', 'folded', 'continuous', 'folded'];
+  const watcher = new EventWatcher(t, navigator.devicePosture, ['change']);
+  const postures = ['folded', 'continuous', 'folded'];
   for (const posture of postures) {
-    await test_driver.set_device_posture(posture);
-    await watcher;
+    await Promise.all([
+      watcher.wait_for('change'),
+      test_driver.set_device_posture(posture)
+    ]);
     assert_equals(posture, navigator.devicePosture.type);
   }
 }, 'Device posture test: device-posture-change-event.js.');
