@@ -335,4 +335,16 @@
     window.test_driver_internal.clear_device_posture = function(context=null) {
         return create_action("clear_device_posture", {context});
     };
+
+    window.test_driver_internal.create_virtual_pressure_source = function(source_type, metadata={}, context=null) {
+        return create_action("create_virtual_pressure_source", {source_type, metadata, context});
+    };
+
+    window.test_driver_internal.update_virtual_pressure_source = function(source_type, sample, context=null) {
+        return create_action("update_virtual_pressure_source", {source_type, sample, context});
+    };
+
+    window.test_driver_internal.remove_virtual_pressure_source = function(source_type, context=null) {
+        return create_action("remove_virtual_pressure_source", {source_type, context});
+    };
 })();

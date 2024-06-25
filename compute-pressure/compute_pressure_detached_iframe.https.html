@@ -1,10 +1,8 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>PressureObserver on DOMWindow of detached iframe</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/test-only-api.js"></script>
-<script src="resources/pressure-helpers.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <body>
 <script>
 'use strict';
@@ -48,10 +46,16 @@ promise_test(async t => {
   observer.disconnect();
 }, 'PressureObserver.disconnect() on detached frame returns');
 
-pressure_test(async (t, mockPressureService) => {
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
   const frame_window = iframe.contentWindow;
+
+  await test_driver.create_virtual_pressure_source('cpu');
 
   const observer = new frame_window.PressureObserver(() => {});
   const iframe_DOMException = frame_window.DOMException;
@@ -68,23 +72,28 @@ pressure_test(async (t, mockPressureService) => {
     const observer = new PressureObserver(resolve);
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
-    mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
+    test_driver.update_virtual_pressure_source('cpu', 'critical');
   });
   assert_equals(changes[0].state, 'critical');
 }, 'Detaching frame while PressureObserver.observe() settles');
 
-pressure_test(async (t, mockPressureService) => {
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
   const frame_window = iframe.contentWindow;
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
   const observer = new frame_window.PressureObserver(() => {
     assert_unreached('The observer callback should not be called');
   });
 
   await observer.observe('cpu');
-  mockPressureService.setPressureUpdate('cpu', 'critical');
-  mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
+  await test_driver.update_virtual_pressure_source('cpu', 'critical');
 
   iframe.remove();
 

@@ -1,10 +1,16 @@
-// META: script=/resources/test-only-api.js
-// META: script=resources/pressure-helpers.js
-// META: global=window,dedicatedworker,sharedworker
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: global=window
 
 'use strict';
 
-pressure_test(async (t, mockPressureService) => {
+promise_test(async (t) => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
   const pressureChanges = await new Promise(async resolve => {
     const observer_changes = [];
     let n = 0;
@@ -13,19 +19,18 @@ pressure_test(async (t, mockPressureService) => {
       if (++n === 2)
         resolve(observer_changes);
     });
-    observer.observe('cpu', {sampleInterval: 200});
-    const updatesDelivered = mockPressureService.updatesDelivered();
-    mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(/*sampleInterval*/ 200);
+    // TODO(CP): Old line is maybe possible when sampleInterval is available.
+    //observer.observe('cpu', {sampleInterval: 200});
+    observer.observe('cpu');
+    await test_driver.update_virtual_pressure_source('cpu', 'critical');
+    await t.step_wait(() => observer_changes.length == 1);
     // Deliver 2 updates.
-    await t.step_wait(
-        () => mockPressureService.updatesDelivered() >= (updatesDelivered + 2),
-        'Wait for more than one update to be delivered to the observer');
-    mockPressureService.setPressureUpdate('cpu', 'nominal');
+    await test_driver.update_virtual_pressure_source('cpu', 'nominal');
     // Deliver more updates, |resolve()| will be called when the new pressure
     // state reaches PressureObserver and its callback is invoked
     // for the second time.
   });
+
   assert_equals(pressureChanges.length, 2);
   assert_equals(pressureChanges[0][0].state, 'critical');
   assert_equals(pressureChanges[1][0].state, 'nominal');

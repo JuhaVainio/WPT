@@ -36,6 +36,7 @@ from .protocol import (BaseProtocolPart,
                        FedCMProtocolPart,
                        VirtualSensorProtocolPart,
                        DevicePostureProtocolPart,
+                       VirtualPressureSourceProtocolPart,
                        merge_dicts)
 
 from webdriver.client import Session
@@ -443,6 +444,22 @@ class WebDriverDevicePostureProtocolPart(DevicePostureProtocolPart):
     def clear_device_posture(self):
         return self.webdriver.send_session_command("DELETE", "deviceposture")
 
+class WebDriverVirtualPressureSourceProtocolPart(VirtualPressureSourceProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def create_virtual_pressure_source(self, source_type, metadata):
+        body = {"type": source_type}
+        body.update(metadata)
+        return self.webdriver.send_session_command("POST", "pressuresource", body)
+
+    def update_virtual_pressure_source(self, source_type, sample):
+        body = {"sample": sample}
+        return self.webdriver.send_session_command("POST", "pressuresource/%s" % source_type, body)
+
+    def remove_virtual_pressure_source(self, source_type):
+        return self.webdriver.send_session_command("DELETE", "pressuresource/%s" % source_type)
+
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
                   WebDriverTestharnessProtocolPart,
@@ -462,7 +479,8 @@ class WebDriverProtocol(Protocol):
                   WebDriverFedCMProtocolPart,
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
-                  WebDriverDevicePostureProtocolPart]
+                  WebDriverDevicePostureProtocolPart,
+                  WebDriverVirtualPressureSourceProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)

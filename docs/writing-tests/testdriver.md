@@ -125,6 +125,13 @@ the global scope.
 .. js:autofunction:: test_driver.clear_device_posture
 ```
 
+### Compute Pressure ###
+```eval_rst
+.. js:autofunction:: test_driver.create_virtual_pressure_source
+.. js:autofunction:: test_driver.update_virtual_pressure_source
+.. js:autofunction:: test_driver.remove_virtual_pressure_source
+```
+
 ### Using test_driver in other browsing contexts ###
 
 Testdriver can be used in browsing contexts (i.e. windows or frames)

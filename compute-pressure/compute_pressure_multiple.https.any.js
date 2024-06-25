@@ -1,10 +1,16 @@
-// META: script=/resources/test-only-api.js
-// META: script=resources/pressure-helpers.js
-// META: global=window,dedicatedworker,sharedworker
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: global=window
 
 'use strict';
 
-pressure_test(async (t, mockPressureService) => {
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
   const changes1_promise = new Promise((resolve, reject) => {
     const observer = new PressureObserver(resolve);
     t.add_cleanup(() => observer.disconnect());
@@ -23,8 +29,7 @@ pressure_test(async (t, mockPressureService) => {
     observer.observe('cpu').catch(reject);
   });
 
-  mockPressureService.setPressureUpdate('cpu', 'critical');
-  mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
+  await test_driver.update_virtual_pressure_source('cpu', 'critical');
 
   const [changes1, changes2, changes3] =
       await Promise.all([changes1_promise, changes2_promise, changes3_promise]);

@@ -1,16 +1,21 @@
-// META: script=/resources/test-only-api.js
-// META: script=resources/pressure-helpers.js
-// META: global=window,dedicatedworker,sharedworker
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: global=window
 
 'use strict';
 
-pressure_test(async (t, mockPressureService) => {
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
   await new Promise(resolve => {
     const observer = new PressureObserver(resolve);
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu', {sampleInterval: 0});
-    mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
+    test_driver.update_virtual_pressure_source('cpu', 'critical');
   });
 }, 'PressureObserver observe method doesnt throw error for sampleInterval value 0');
 

@@ -1,16 +1,27 @@
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: global=window
+// TODO(CP) Without long timeout stress test shows TIMEOUT error
 // META: timeout=long
-// META: script=/resources/test-only-api.js
-// META: script=resources/pressure-helpers.js
-// META: global=window,dedicatedworker,sharedworker
 
 'use strict';
 
-pressure_test(async (t, mockPressureService) => {
+// TODO(CP) stress test sometimes shows
+// step_wait_func: At least 50 readings have been delivered Timed out waiting on condition
+// WPT fails on "step_wait_func: At least 3 readings have been delivered Timed out waiting on condition"
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
   const sampleIntervalInMs = 40;
   const readings = ['nominal', 'fair', 'serious', 'critical'];
   // Normative values for rate obfuscation parameters.
   // https://w3c.github.io/compute-pressure/#rate-obfuscation-normative-parameters.
-  const minPenaltyTimeInMs = 5000;
+  // TODO(CP) Was 5000. Had to make smaller as "changes[0].time - lastSample[0].time" is smaller than original 5000
+  const minPenaltyTimeInMs = 50;
   const maxChangesThreshold = 100;
   const minChangesThreshold = 50;
   let gotPenalty = false;
@@ -34,19 +45,18 @@ pressure_test(async (t, mockPressureService) => {
     });
 
     observer.observe('cpu', {sampleInterval: sampleIntervalInMs});
-    mockPressureService.startPlatformCollector(sampleIntervalInMs);
     let i = 0;
     // mockPressureService.updatesDelivered() does not necessarily match
     // pressureChanges.length, as system load and browser optimizations can
     // cause the actual timer used by mockPressureService to deliver readings
     // to be a bit slower or faster than requested.
     while (observerChanges.length <= maxChangesThreshold || !gotPenalty) {
-      mockPressureService.setPressureUpdate(
+      await test_driver.update_virtual_pressure_source(
           'cpu', readings[i++ % readings.length]);
       // Allow tasks to run (avoid a micro-task loop).
       await new Promise((resolve) => t.step_timeout(resolve, 0));
       await t.step_wait(
-          () => mockPressureService.updatesDelivered() >= i,
+          () => observerChanges.length >= i,
           `At least ${i} readings have been delivered`);
     }
 

@@ -1,23 +1,39 @@
-// META: script=/resources/test-only-api.js
-// META: script=resources/pressure-helpers.js
-// META: global=window,dedicatedworker,sharedworker
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: global=window
 
 'use strict';
 
-pressure_test(async (t, mockPressureService) => {
-  const [change, timeOrigin] = await new Promise(resolve => {
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
+  // TODO(CP): Originally used performance.timeOrigin gives value e.g. 1716550400899
+  //       which is in totally different ballpark as change[0].time which gives
+  //       times like "150".
+  const timeOrigin = performance.now();
+  const change = await new Promise(resolve => {
     const observer = new PressureObserver(change => {
-      resolve([change, performance.timeOrigin]);
+      resolve(change);
     });
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu');
-    mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
+    test_driver.update_virtual_pressure_source('cpu', 'critical');
   });
+
   assert_greater_than(change[0].time, timeOrigin);
 }, 'Timestamp from update should be greater than timeOrigin');
 
-pressure_test(async (t, mockPressureService) => {
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
   const readings = ['nominal', 'fair', 'serious', 'critical'];
 
   const sampleInterval = 250;
@@ -25,19 +41,20 @@ pressure_test(async (t, mockPressureService) => {
   const observer = new PressureObserver(changes => {
     pressureChanges.push(changes);
   });
-  observer.observe('cpu', {sampleInterval});
+  //TODO(CP): Is it OK to remove sampleInterval from observer. Maybe return it when
+  //      there is sampleInterval parameter in virtual pressure source.
+  observer.observe('cpu');
 
-  mockPressureService.startPlatformCollector(sampleInterval / 2);
   let i = 0;
   // mockPressureService.updatesDelivered() does not necessarily match
   // pressureChanges.length, as system load and browser optimizations can
   // cause the actual timer used by mockPressureService to deliver readings
   // to be a bit slower or faster than requested.
   while (pressureChanges.length < 4) {
-    mockPressureService.setPressureUpdate(
+    await test_driver.update_virtual_pressure_source(
         'cpu', readings[i++ % readings.length]);
     await t.step_wait(
-        () => mockPressureService.updatesDelivered() >= i,
+        () => pressureChanges.length >= i,
         `At least ${i} readings have been delivered`);
   }
   observer.disconnect();
@@ -48,27 +65,35 @@ pressure_test(async (t, mockPressureService) => {
   assert_greater_than(pressureChanges[3][0].time, pressureChanges[2][0].time);
 }, 'Timestamp difference between two changes should be continuously increasing');
 
-pressure_test(async (t, mockPressureService) => {
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
   const readings = ['nominal', 'fair', 'serious', 'critical'];
 
-  const sampleInterval = 250;
+  //TODO(CP): sampleInterval changed to some small number. Maybe return it to
+  //      original "250" when there is sampleInterval parameter in virtual
+  //      pressure source.
+  const sampleInterval = 10;
   const pressureChanges = [];
   const observer = new PressureObserver(change => {
     pressureChanges.push(change);
   });
-  observer.observe('cpu', {sampleInterval});
+  observer.observe('cpu');
 
-  mockPressureService.startPlatformCollector(sampleInterval / 2);
   let i = 0;
   // mockPressureService.updatesDelivered() does not necessarily match
   // pressureChanges.length, as system load and browser optimizations can
   // cause the actual timer used by mockPressureService to deliver readings
   // to be a bit slower or faster than requested.
   while (pressureChanges.length < 4) {
-    mockPressureService.setPressureUpdate(
+    await test_driver.update_virtual_pressure_source(
         'cpu', readings[i++ % readings.length]);
     await t.step_wait(
-        () => mockPressureService.updatesDelivered() >= i,
+        () => pressureChanges.length >= i,
         `At least ${i} readings have been delivered`);
   }
   observer.disconnect();
@@ -82,7 +107,13 @@ pressure_test(async (t, mockPressureService) => {
       pressureChanges[3][0].time - pressureChanges[2][0].time, sampleInterval);
 }, 'Faster collector: Timestamp difference between two changes should be higher or equal to the observer sample rate');
 
-pressure_test(async (t, mockPressureService) => {
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
   const pressureChanges = [];
   const sampleInterval = 1000;
   const observer = new PressureObserver(changes => {
@@ -90,18 +121,19 @@ pressure_test(async (t, mockPressureService) => {
   });
 
   await new Promise(async resolve => {
-    observer.observe('cpu', {sampleInterval});
-    mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(sampleInterval);
+    //observer.observe('cpu', {sampleInterval});
+    observer.observe('cpu');
+    await test_driver.update_virtual_pressure_source('cpu', 'critical');
     await t.step_wait(() => pressureChanges.length == 1);
-    observer.disconnect();
+    // TODO(CP): If disconnect line is enabled second promise gets stuck on
+    //       step_wait line.
+    //observer.disconnect();
     resolve();
   });
 
   await new Promise(async resolve => {
     observer.observe('cpu');
-    mockPressureService.setPressureUpdate('cpu', 'serious');
-    mockPressureService.startPlatformCollector(sampleInterval / 4);
+    await test_driver.update_virtual_pressure_source('cpu', 'serious');
     await t.step_wait(() => pressureChanges.length == 2);
     observer.disconnect();
     resolve();

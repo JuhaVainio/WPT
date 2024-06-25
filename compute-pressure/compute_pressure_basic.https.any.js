@@ -1,27 +1,33 @@
-// META: timeout=long
-// META: script=/resources/test-only-api.js
-// META: script=resources/pressure-helpers.js
-// META: global=window,dedicatedworker,sharedworker
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: global=window
 
 'use strict';
 
-pressure_test((t, mockPressureService) => {
+promise_test(async (t) => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
   const observer = new PressureObserver(() => {
     assert_unreached('The observer callback should not be called');
   });
-
-  mockPressureService.setExpectedFailure(
-      new DOMException('', 'NotSupportedError'));
+  await test_driver.create_virtual_pressure_source('cpu', {supported: false});
   return promise_rejects_dom(t, 'NotSupportedError', observer.observe('cpu'));
 }, 'Return NotSupportedError when calling observer()');
 
-pressure_test(async (t, mockPressureService) => {
+promise_test(async (t) => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
   const changes = await new Promise(resolve => {
     const observer = new PressureObserver(resolve);
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu');
-    mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
+    test_driver.update_virtual_pressure_source('cpu', 'critical');
   });
   assert_true(changes.length === 1);
   assert_equals(changes[0].state, 'critical');
@@ -29,22 +35,37 @@ pressure_test(async (t, mockPressureService) => {
   assert_equals(typeof changes[0].time, 'number');
 }, 'Basic functionality test');
 
-pressure_test((t, mockPressureService) => {
+promise_test(async (t) => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
   const observer = new PressureObserver(() => {
     assert_unreached('The observer callback should not be called');
   });
 
+  //TODO(CP) In this test if observer.observe is before update_virtual_pressure_source
+  //         test fails. Order of these two commands?
+  //         [FAIL] Removing observer before observe() resolves works
+  //         assert_unreached: Should have rejected: undefined Reached unreachable code
+  await test_driver.update_virtual_pressure_source('cpu', 'critical');
   const promise = observer.observe('cpu');
   observer.unobserve('cpu');
-  mockPressureService.setPressureUpdate('cpu', 'critical');
-  mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
 
   return promise_rejects_dom(t, 'AbortError', promise);
 }, 'Removing observer before observe() resolves works');
 
-pressure_test(async (t, mockPressureService) => {
+promise_test(async (t) => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
   const callbackPromises = [];
   const observePromises = [];
+
+  await test_driver.create_virtual_pressure_source('cpu');
 
   for (let i = 0; i < 2; i++) {
     callbackPromises.push(new Promise(resolve => {
@@ -55,14 +76,17 @@ pressure_test(async (t, mockPressureService) => {
   }
 
   await Promise.all(observePromises);
-
-  mockPressureService.setPressureUpdate('cpu', 'critical');
-  mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
-
+  await test_driver.update_virtual_pressure_source('cpu', 'critical');
   return Promise.all(callbackPromises);
 }, 'Calling observe() multiple times works');
 
-pressure_test(async (t, mockPressureService) => {
+promise_test(async (t) => {
+  t.add_cleanup(async () => {
+    await test_driver.remove_virtual_pressure_source('cpu');
+  });
+
+  await test_driver.create_virtual_pressure_source('cpu');
+
   const observer1_changes = [];
   await new Promise(resolve => {
     const observer1 = new PressureObserver(changes => {
@@ -71,8 +95,7 @@ pressure_test(async (t, mockPressureService) => {
     });
     t.add_cleanup(() => observer1.disconnect());
     observer1.observe('cpu');
-    mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
+    test_driver.update_virtual_pressure_source('cpu', 'critical');
   });
   assert_true(observer1_changes.length === 1);
   assert_equals(observer1_changes[0][0].source, 'cpu');
@@ -86,6 +109,9 @@ pressure_test(async (t, mockPressureService) => {
     });
     t.add_cleanup(() => observer2.disconnect());
     observer2.observe('cpu');
+    // TODO(CP): Without sampleInterval in virtual pressure source new update is
+    //       needed.
+    test_driver.update_virtual_pressure_source('cpu', 'critical');
   });
   assert_true(observer2_changes.length === 1);
   assert_equals(observer2_changes[0][0].source, 'cpu');
